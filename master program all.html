@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>マスタープログラム 演習ノート</title>
+<style>
+:root{--ink:#1a1208;--ink-l:#4a3f2f;--paper:#faf8f3;--warm:#f5f1e8;--rule:#d4c9b0;--acc:#8b3a1a;--acc2:#c4703a;--gold:#b8972a;--goldl:#e8d88a;--sbg:#f0ebe0;--sh:rgba(26,18,8,.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,'Hiragino Sans','Noto Sans JP',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;font-size:14px;line-height:1.7}
+.app-header{background:var(--ink);color:var(--paper);padding:14px 16px 10px;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px var(--sh)}
+.app-title{font-size:14px;font-weight:600;letter-spacing:.05em}
+.app-title span{color:var(--goldl);font-size:10px;display:block;letter-spacing:.1em;margin-top:2px;font-weight:400;opacity:.9}
+.step-tabs{display:flex;background:#2a1f10;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid #3a2e1a;padding:0 6px}
+.step-tabs::-webkit-scrollbar{display:none}
+.step-tab{padding:7px 11px;font-size:11px;font-weight:600;color:#9a8060;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;letter-spacing:.04em;flex-shrink:0}
+.step-tab.active{color:var(--goldl);border-bottom-color:var(--gold)}
+.day-tabs{display:flex;background:var(--warm);border-bottom:1px solid var(--rule);overflow-x:auto;scrollbar-width:none;padding:0 10px}
+.day-tabs::-webkit-scrollbar{display:none}
+.day-tab{padding:7px 13px;font-size:12px;font-weight:500;color:var(--ink-l);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;flex-shrink:0}
+.day-tab.active{color:var(--acc);border-bottom-color:var(--acc);font-weight:700}
+.content{padding:14px 14px 110px;max-width:720px;margin:0 auto}
+.step-panel{display:none}.step-panel.active{display:block}
+.day-panel{display:none}.day-panel.active{display:block}
+.day-hdr{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.day-badge{background:var(--acc);color:#fff;font-size:10px;font-weight:700;letter-spacing:.08em;padding:3px 8px;border-radius:2px;white-space:nowrap;flex-shrink:0}
+.day-theme{font-size:14px;font-weight:700;color:var(--ink);letter-spacing:.04em}
+.day-week{font-size:10px;color:var(--ink-l);margin-left:auto;opacity:.6;white-space:nowrap;flex-shrink:0}
+.round-row{display:flex;align-items:center;gap:7px;margin-bottom:14px;background:var(--sbg);border-radius:5px;padding:7px 12px;border:1px solid var(--rule);flex-wrap:wrap}
+.round-lbl{font-size:11px;color:var(--ink-l);font-weight:600;letter-spacing:.06em}
+.round-btn{width:28px;height:28px;border:1.5px solid var(--rule);background:#fff;border-radius:50%;font-size:12px;font-weight:700;cursor:pointer;color:var(--ink-l);transition:all .18s;flex-shrink:0}
+.round-btn.active{background:var(--acc);border-color:var(--acc);color:#fff}
+.add-round{width:28px;height:28px;border:1.5px dashed var(--rule);background:transparent;border-radius:50%;font-size:16px;cursor:pointer;color:var(--rule);transition:all .18s;line-height:1;flex-shrink:0}
+.add-round:hover{border-color:var(--acc2);color:var(--acc2)}
+.qb{margin-bottom:14px;background:#fff;border:1px solid var(--rule);border-radius:6px;overflow:hidden;box-shadow:0 1px 4px var(--sh)}
+.qh{padding:10px 13px 8px;background:var(--warm);border-bottom:1px solid var(--rule)}
+.qt{font-size:13px;color:var(--ink);line-height:1.55;font-weight:500}
+.qb-body{padding:9px 13px 11px}
+textarea{width:100%;border:none;border-bottom:1.5px solid var(--rule);background:transparent;resize:none;font-family:inherit;font-size:13px;color:var(--ink);padding:5px 2px;line-height:1.7;outline:none;transition:border-color .2s;overflow:hidden;min-height:36px}
+textarea:focus{border-bottom-color:var(--acc2)}
+textarea::placeholder{color:#ccc;font-size:12px}
+.sub-lbl{font-size:11px;color:var(--acc);font-weight:600;letter-spacing:.04em;margin-bottom:2px;display:block;margin-top:9px}
+.sub-lbl:first-child{margin-top:0}
+.cb-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px 8px;margin-top:5px}
+.cb-grid-4{grid-template-columns:1fr 1fr 1fr 1fr}
+.ci{display:flex;align-items:flex-start;gap:6px;cursor:pointer;padding:3px 4px;border-radius:3px}
+.ci input[type=checkbox]{width:14px;height:14px;accent-color:var(--acc);cursor:pointer;flex-shrink:0;margin-top:2px}
+.ci label{font-size:12px;color:var(--ink);cursor:pointer;line-height:1.4}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;margin-top:4px}
+.tbl th{background:var(--sbg);padding:6px 8px;text-align:left;font-weight:600;color:var(--ink-l);border:1px solid var(--rule);font-size:11px}
+.tbl td{border:1px solid var(--rule);padding:0}
+.tbl td input{width:100%;border:none;padding:5px 8px;font-size:12px;font-family:inherit;color:var(--ink);background:transparent;outline:none}
+.tbl td input:focus{background:rgba(139,58,26,.04)}
+.tbl .rl{padding:5px 8px;font-size:12px;color:var(--ink-l);background:var(--warm);border-right:1px solid var(--rule);white-space:nowrap}
+.score-row{display:flex;align-items:center;gap:8px;margin:5px 0;flex-wrap:wrap}
+.score-inp{width:62px;text-align:center;border:1.5px solid var(--rule);border-radius:4px;padding:5px;font-size:16px;font-weight:700;color:var(--acc);outline:none;background:#fff;transition:border-color .2s}
+.score-inp:focus{border-color:var(--acc2)}
+.score-lbl{font-size:11px;color:var(--ink-l)}
+.pg{margin-bottom:10px;padding:9px 11px;border:1px solid var(--rule);border-radius:5px;background:var(--warm)}
+.pg:last-child{margin-bottom:0}
+.pg-ttl{font-size:13px;color:var(--acc);font-weight:700;margin-bottom:6px}
+.ni{border:none;border-bottom:1px solid var(--rule);width:100%;padding:4px 2px;font-family:inherit;font-size:13px;outline:none;background:transparent;margin-bottom:5px;color:var(--ink)}
+.pledge{margin-top:6px;padding:12px 13px;background:linear-gradient(135deg,#fdf8ef,#faf4e4);border:1px solid var(--goldl);border-radius:5px}
+.pledge-ttl{font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.1em;margin-bottom:7px;text-align:center}
+.tl-tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tl-tbl td{border:1px solid var(--rule);padding:3px 7px}
+.tl-tbl .t-lbl{width:46px;background:var(--warm);font-weight:600;color:var(--ink-l);text-align:center;font-size:11px}
+.tl-tbl input{width:100%;border:none;padding:2px 4px;font-family:inherit;font-size:12px;background:transparent;outline:none}
+.action-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--rule);padding:9px 14px;display:flex;gap:7px;align-items:center;box-shadow:0 -2px 12px var(--sh);z-index:100}
+.btn{padding:9px 16px;border-radius:4px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;transition:all .18s;border:none}
+.btn-p{background:var(--acc);color:#fff;flex:1}
+.btn-s{background:var(--warm);color:var(--ink-l);border:1.5px solid var(--rule);padding:9px 12px}
+.save-st{font-size:11px;color:var(--ink-l);opacity:0;transition:opacity .3s}
+.save-st.show{opacity:1}
+.toast{position:fixed;top:60px;right:12px;background:var(--ink);color:#fff;padding:9px 14px;border-radius:5px;font-size:12px;letter-spacing:.04em;opacity:0;transform:translateY(-8px);transition:all .25s;z-index:200;pointer-events:none;max-width:280px}
+.toast.show{opacity:1;transform:translateY(0)}
+.hc{background:#fff;border:1px solid var(--rule);border-radius:5px;margin-bottom:10px;overflow:hidden}
+.hc-hdr{background:var(--warm);padding:9px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--rule);cursor:pointer}
+.hc-ttl{font-size:13px;font-weight:700;color:var(--ink)}
+.hc-meta{font-size:11px;color:var(--ink-l);opacity:.7}
+.hc-body{padding:10px 12px;display:none}
+.hc-body.open{display:block}
+.hi{margin-bottom:7px;padding-bottom:7px;border-bottom:1px solid var(--rule);font-size:13px;white-space:pre-wrap}
+.hi:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.note-box{background:var(--sbg);border-radius:4px;padding:8px 10px;font-size:12px;color:var(--ink-l);margin-bottom:10px;line-height:1.6}
+.scale-row{display:flex;align-items:center;gap:6px;margin:5px 0;flex-wrap:wrap}
+.scale-lbl-s{font-size:10px;color:var(--ink-l)}
+.habit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.habit-cell{border:1px solid var(--rule);border-radius:4px;overflow:hidden}
+.habit-cell-hdr{background:var(--sbg);padding:5px 8px;font-size:11px;font-weight:700;color:var(--ink-l);border-bottom:1px solid var(--rule)}
+.habit-cell textarea{border-bottom:none;padding:6px 8px;min-height:60px}
+.hist-empty{text-align:center;padding:50px 20px;color:var(--rule);font-size:13px}
+</style>
+</head>
+<body>
+<div class="app-header">
+  <div class="app-title">マスタープログラム 演習ノート<span>Achievement Technology — 全13STEP完全版</span></div>
+</div>
+<div class="step-tabs" id="stepTabs"></div>
+<div class="day-tabs" id="dayTabs"></div>
+<div class="content" id="mainContent"></div>
+<div class="action-bar">
+  <button class="btn btn-s" onclick="clearDay()">クリア</button>
+  <button class="btn btn-p" onclick="copyData()">📋 コピー</button>
+  <span class="save-st" id="saveSt">✓ 保存済み</span>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+// ===== STEP定義 =====
+const STEPS=[
+{id:'s1',label:'STEP1',title:'成功は技術である',days:[
+{id:'d1',label:'Day 1',badge:'1st Week - 1st day',theme:'未来をつくる思考の力',qs:[
+{t:'ta',l:'1. ナイチンゲールから学んだ、信念とはどのような力か。このセクションから学んだことをまとめましょう。'},
+{t:'persons1',l:'2. 身近な人で、強い信念を持ち現実をつくり出した人を一人挙げてください。',fields:['人物','成し遂げたこと','信念']},
+{t:'ta',l:'3. 過去、あなたが高い目標達成に挑戦するなかで、大きな困難や障害にぶつかりながらも乗り越えた経験はありますか。'},
+{t:'ta',l:'4. なぜ、その壁を乗り越えることができたのでしょうか。そのとき、あなたはどのような信念を持っていたと思いますか。'},
+{t:'ta',l:'5. 逆に、大きな困難や障害にぶつかり乗り越えられなかった経験はありますか。'},
+{t:'ta',l:'6. なぜ乗り越えることができなかったのでしょうか。どのような信念があれば乗り越えられたと思いますか。'},
+]},
+{id:'d2',label:'Day 2',badge:'1st Week - 2nd day',theme:'未来をつくる思考の力',qs:[
+{t:'ta',l:'7. 望むことと信じることには、どのような違いがあると思いますか。'},
+{t:'ta',l:'8. 今、あなたが何が何でも達成したいと思っている目標は何ですか。'},
+{t:'su',l:'9. その目標は必ず達成できると、何%信じていますか。',unit:'%'},
+{t:'ta',l:'10. 今目指している目標の達成を、100%の「信念」に変えるために、これから何に取り組みますか。'},
+{t:'pledge'},
+]},
+{id:'d3',label:'Day 3',badge:'1st Week - 3rd day',theme:'一点の曇りなき積極思考',qs:[
+{t:'sc4',l:'1. 自分の仕事・家族・パートナー・人生に対する自信を、0〜100で点数をつけてください。',items:['①自分の仕事','②自分の家族','③自分のパートナー（配偶者・恋人）','④自分の人生']},
+{t:'r4',l:'2. 問1で、なぜその点数をつけましたか。それぞれの理由を書き出してください。',items:['①仕事','②家族','③パートナー','④人生']},
+{t:'r4',l:'3. もし全ての項目に100点をつけるとしたら、それぞれどのように考えたとき100点をつけられるでしょうか。',items:['①仕事','②家族','③パートナー','④人生']},
+{t:'ta',l:'4. 毎日、問3で書き出した考え方を選択し続けたとしたら、あなたの人生はどのように変化すると思いますか。'},
+]},
+{id:'d4',label:'Day 4',badge:'1st Week - 4th day',theme:'一点の曇りなき積極思考',qs:[
+{t:'pn3',l:'5. 次の3つの現象に対して、ネガティブ・ポジティブなものの見方を考えて答えてください。',items:['①「家を出ようとしたら雨が降っていた」','②「メンバーがミーティングに無断で遅刻した」','③「恋人（配偶者）から食事の予定を直前にキャンセルされた」']},
+{t:'ml',l:'6. 最近、あなたがネガティブに捉えた出来事はありますか。それをポジティブに捉えるにはどうすればよいですか。',subs:['ネガティブに捉えた出来事','ポジティブに捉えるためには']},
+{t:'ta',l:'7. 常にポジティブな考え方を選び続けるために、これからどのようなことに取り組みますか。'},
+{t:'pledge'},
+]},
+{id:'d5',label:'Day 5',badge:'1st Week - 5th day',theme:'信念を育む自己暗示',qs:[
+{t:'ta',l:'1. あなたは、思い描いたとおりの成果が出ているとき、どのような言葉を自分にかけていますか。'},
+{t:'ta',l:'2. あなたは、思い描いたとおりの成果が出ていないとき、どのような言葉を自分にかけていますか。'},
+{t:'ta',l:'3. あなたがよく自分にかけている言葉は、あなたにどのような影響を与えていると思いますか。'},
+{t:'ta',l:'4. どのような言葉かけをすると、あなたが望む目標達成や成功に効果的でしょうか。継続して使うものや、よりよい言葉かけに変えられるものは何だと思いますか。'},
+]},
+{id:'d6',label:'Day 6',badge:'1st Week - 6th day',theme:'信念を育む自己暗示',qs:[
+{t:'env',l:'5. 日常生活のなかで、以下のものを活用し、毎日自分に肯定的な暗示をかけ続けるとしたら、それぞれどのように活用しますか。',items:['テレビや映画','新聞','書籍','SNSの情報','身近な人からの言葉','その他']},
+{t:'ta',l:'6. 肯定的な暗示を毎日かけられるように、視覚的に工夫できることはありますか。'},
+{t:'roles5',l:'7. あなたは、どのような役割を持っていますか。それぞれの役割に沿って、どのような人間でありたいか暗示の言葉を書いてみましょう。（5組）'},
+{t:'pledge'},
+]},
+]},
+{id:'s2',label:'STEP2',title:'人生の目的を持つ',days:[
+{id:'d1',label:'Day 1',badge:'2nd Week - 1st day',theme:'目的から一貫した人生を描く',qs:[
+{t:'cbf',l:'1. あなたの人生において、判断基準となる価値観や信条は何ですか。人生理念キーワードから3つ選んでください。当てはまるものがなければ、自由記入欄に書いてください。',items:['愛','感謝','平和','思いやり','優しさ','素直','誠実','謙虚','正直','本心','等身大','丁寧','親切','家族','喜び','笑顔','励ます','進む','挑戦','情熱','躍動','実力','成長','向上心','活気','共創','絆','出会い','未知','発見','創造','純粋','上質','感動','認める','決める','責任','完遂','真剣','本気','卓越','価値','探求','追求','好奇心','変化','選択','幸福','貢献','一期一会','本質','約束','生きる','笑う','信念','忍耐','達成','承認','尊敬','努力','一貫性','熱中','熱意','意志','表現','堅実','自然体','没頭','志','懸ける','結ぶ','仲間','信頼','恩返し','共感','真心','誇り','自信','真理','協調','受容','支援','実行','懸命','礼','正義','求める','勝つ','伝える','愛する','輝く','導く','達成する','楽しむ','生み出す','尊重する','鍛える','守る','突き抜ける','尽くす','磨く','理解する','知る','支える','繫ぐ','応援する']},
+{t:'ta',l:'2. あなたの人生理念は何ですか。問1で選んだキーワードの意味を書き出しましょう。'},
+]},
+{id:'d2',label:'Day 2',badge:'2nd Week - 2nd day',theme:'目的から一貫した人生を描く',qs:[
+{t:'ta',l:'3. あなたは、なぜその言葉を選びましたか。'},
+{t:'ta',l:'4. 人生理念にもとづいて日々を過ごしたとしたら、どのような人生を手にすることができると考えますか。'},
+{t:'ml',l:'5. 今、あなたは大切にしたい価値観・理念から一貫した行動を、毎日とっていますか。',subs:['理念にもとづいて行動できているとき','理念にもとづいて行動できていないとき']},
+{t:'ta',l:'6. さらに理念から一貫した行動をとり続けるために、何をすべきでしょうか。'},
+{t:'ta',l:'7. 理念を大切にしながらあなたはどのようなビジョンを実現しますか。'},
+{t:'ta',l:'8. あなたは、誰のために、何のために、何を大切にして生きますか。「人生の目的」を書き出してください。'},
+{t:'pledge'},
+]},
+{id:'d3',label:'Day 3',badge:'2nd Week - 3rd day',theme:'バランスのとれたビジョンを持つ',qs:[
+{t:'yoku',l:'1. 生存の欲求について',min:'病んでいる',max:'絶好調',vl:'あなたが理想とする、心身ともに健康な人生とはどのようなものですか。'},
+{t:'yoku',l:'2. 愛・所属の欲求について',min:'孤独',max:'素晴らしい人間関係に恵まれている',vl:'あなたが理想とする、愛に満たされた人生とはどのようなものですか。'},
+{t:'yoku',l:'3. 力の欲求について',min:'自分の価値を感じられない',max:'人の役に立っている',vl:'あなたが理想とする、人の役に立つ価値ある人生とはどのようなものですか。'},
+]},
+{id:'d4',label:'Day 4',badge:'2nd Week - 4th day',theme:'バランスのとれたビジョンを持つ',qs:[
+{t:'yoku',l:'4. 自由の欲求について',min:'経済的にも精神的にも不自由',max:'経済的にも精神的にも自由',vl:'あなたが理想とする、心の平安と経済的自由のある人生とはどのようなものですか。'},
+{t:'yoku',l:'5. 楽しみの欲求について',min:'つまらない',max:'毎日楽しい',vl:'あなたが理想とする、楽しみに満ちた人生とはどのようなものですか。'},
+{t:'ml',l:'6. バランスのとれた人生を実現していくことが重要です。あなたがつい注力しがちな分野、逆に、おろそかになりがちな分野はどの分野ですか。',subs:['注力しがちな分野','おろそかになりがちな分野']},
+{t:'ta',l:'7. バランスのとれた人生を実現するために、あなたは何を意識し、どのようなことに取り組みますか。'},
+{t:'pledge'},
+]},
+{id:'d5',label:'Day 5',badge:'2nd Week - 5th day',theme:'段階を追った自己実現',qs:[
+{t:'cb',l:'1. 今、あなたは「戦略的人生経営」のなかで、どの段階に位置していると思いますか。',items:['学習の段階（種蒔き）','指導力開発の段階（種蒔き）','挑戦の段階（種蒔き）','富の形成の段階（収穫）','社会還元の段階（還元）']},
+{t:'ta',l:'2. 問1であなたが自分はその段階にいると考えた理由は何ですか。'},
+{t:'lstg',l:'3. あなた自身はどのように戦略的人生経営をしていくのかを考え、以下の表に記入しましょう。'},
+{t:'ta',l:'4. あなたが今いる人生のステージから、次のステージに上がるためには、どのような挑戦をし、どのような能力を身につける必要がありますか。'},
+]},
+{id:'d6',label:'Day 6',badge:'2nd Week - 6th day',theme:'段階を追った自己実現',qs:[
+{t:'ta',l:'5. 過去、あなたが習慣の壁を突破して「行う」「できる」というレベルに上がることができた経験。なぜ、習慣の壁を突破することができたのでしょうか。'},
+{t:'ta',l:'6. 過去、あなたが自我の壁を突破して、「分かち合う」というレベルに上がることができた経験。なぜ、自我の壁を突破することができたのでしょうか。'},
+{t:'ml',l:'7. これからあなたが次のステージに上がるために、伸ばしたいと思っている能力は何ですか。',subs:['能力','意識すること・実行すること']},
+{t:'pledge'},
+]},
+]},
+{id:'s3',label:'STEP3',title:'現実をつくる信念の力',days:[
+{id:'d1',label:'Day 1',badge:'3rd Week - 1st day',theme:'現実をつくる信念の力',qs:[
+{t:'ta',l:'1. ナイチンゲールから学んだ、信念とはどのような力ですか。このセクションから学んだことをまとめてみましょう。'},
+{t:'persons1',l:'2. 身近な人や知っている人のなかで、強い信念を持ち現実をつくり出した人を一人挙げてください。',fields:['人物','成し遂げたこと','信念']},
+{t:'ta',l:'3. 過去、あなたが高い目標達成に挑戦するなかで、大きな困難や障害にぶつかりながらも乗り越えた経験はありますか。'},
+{t:'ta',l:'4. なぜ、その壁を乗り越えることができたのでしょうか。そのとき、あなたはどのような信念を持っていたと思いますか。'},
+{t:'ta',l:'5. 逆に、大きな困難や障害にぶつかり、乗り越えられなかった経験はありますか。'},
+{t:'ta',l:'6. なぜ、その壁を乗り越えることができなかったのでしょうか。どのような信念を持っていれば、乗り越えられたと思いますか。'},
+]},
+{id:'d2',label:'Day 2',badge:'3rd Week - 2nd day',theme:'現実をつくる信念の力',qs:[
+{t:'ta',l:'7. 望むことと信じることには、どのような違いがあると思いますか。'},
+{t:'ta',l:'8. 今、あなたが何が何でも達成したいと思っている目標は何ですか。'},
+{t:'su',l:'9. その目標は必ず達成できると、何%信じていますか。',unit:'%'},
+{t:'ta',l:'10. あなたが今目指している目標の達成を、100%の「信念」に変えるために、これから何に取り組みますか。'},
+{t:'pledge'},
+]},
+{id:'d3',label:'Day 3',badge:'3rd Week - 3rd day',theme:'一点の曇りなき積極思考',qs:[
+{t:'sc4',l:'1. 自分の仕事・家族・パートナー・人生に対する自信を、0〜100で点数をつけてください。',items:['①自分の仕事','②自分の家族','③自分のパートナー（配偶者・恋人）','④自分の人生']},
+{t:'r4',l:'2. 問1で、なぜその点数をつけましたか。それぞれの理由を書き出してください。',items:['①仕事','②家族','③パートナー','④人生']},
+{t:'r4',l:'3. もし全ての項目に100点をつけるとしたら、それぞれどのように考えたとき100点をつけられるでしょうか。',items:['①仕事','②家族','③パートナー','④人生']},
+{t:'ta',l:'4. 毎日、問3で書き出した考え方を選択し続けたとしたら、あなたの人生はどのように変化すると思いますか。'},
+]},
+{id:'d4',label:'Day 4',badge:'3rd Week - 4th day',theme:'一点の曇りなき積極思考',qs:[
+{t:'pn3',l:'5. 次の3つの現象に対して、ネガティブ・ポジティブなものの見方を考えて答えてください。',items:['①「家を出ようとしたら雨が降っていた」','②「メンバーがミーティングに無断で遅刻した」','③「恋人（配偶者）から食事の予定を直前にキャンセルされた」']},
+{t:'ml',l:'6. 最近、あなたがネガティブに捉えた出来事はありますか。それをポジティブに捉えるにはどうすればよいですか。',subs:['ネガティブに捉えた出来事','ポジティブに捉えるためには']},
+{t:'ta',l:'7. 常にポジティブな考え方を選び続けるために、これからどのようなことに取り組みますか。'},
+{t:'pledge'},
+]},
+{id:'d5',label:'Day 5',badge:'3rd Week - 5th day',theme:'信念を育む自己暗示',qs:[
+{t:'ta',l:'1. あなたは、思い描いたとおりの成果が出ているとき、どのような言葉を自分にかけていますか。'},
+{t:'ta',l:'2. あなたは、思い描いたとおりの成果が出ていないとき、どのような言葉を自分にかけていますか。'},
+{t:'ta',l:'3. あなたがよく自分にかけている言葉は、あなたにどのような影響を与えていると思いますか。'},
+{t:'ta',l:'4. どのような言葉かけをすると、あなたが望む目標達成や成功に効果的でしょうか。継続して使うものや、よりよい言葉かけに変えられるものは何だと思いますか。'},
+]},
+{id:'d6',label:'Day 6',badge:'3rd Week - 6th day',theme:'信念を育む自己暗示',qs:[
+{t:'env',l:'5. 以下のものを活用し、毎日自分に肯定的な暗示をかけ続けるとしたら、それぞれどのように活用しますか。',items:['テレビや映画','新聞','書籍','SNSの情報','身近な人からの言葉','その他']},
+{t:'ta',l:'6. 日常生活において、肯定的な暗示を毎日かけられるように、視覚的に工夫できることはありますか。'},
+{t:'roles5',l:'7. あなたは、どのような役割を持っていますか。それぞれの役割に沿って、どのような人間でありたいか暗示の言葉を書いてみましょう。（5組）'},
+{t:'pledge'},
+]},
+]},
+{id:'s4',label:'STEP4',title:'代価と報酬の原理',days:[
+{id:'d1',label:'Day 1',badge:'4th Week - 1st day',theme:'代価と報酬の原理',qs:[
+{t:'p3g',l:'1. 身近な人で、高い目標達成をした人を3人思い浮かべてください。その人が達成した目標と、支払った代価は何ですか。'},
+]},
+{id:'d2',label:'Day 2',badge:'4th Week - 2nd day',theme:'代価と報酬の原理',qs:[
+{t:'ta',l:'2. あなたが今、何が何でも達成したい目標はどのようなものですか。'},
+{t:'ta',l:'3. あなたが今、その目標に対して支払っている代価は何ですか。'},
+{t:'ta',l:'4. 何が何でも達成したい目標（報酬）と、今支払っている代価を比べたとき、天秤はどのように傾いていますか。'},
+{t:'ta',l:'5. 問2で書き出した目標を達成するために、さらにどのような代価を支払う必要がありますか。'},
+{t:'pledge'},
+]},
+{id:'d3',label:'Day 3',badge:'4th Week - 3rd day',theme:'退路を断ち最善を尽くす',qs:[
+{t:'ml',l:'1. 【事例】ネルソン・マンデラは、民主的な選挙による初めての南アフリカ共和国大統領に就任、アパルトヘイトを撤廃しました。マンデラはこの偉業を成し遂げるまでにどのような困難を乗り越えてきたのでしょうか。',subs:['達成したこと','目標を達成するうえで乗り越えた困難']},
+]},
+{id:'d4',label:'Day 4',badge:'4th Week - 4th day',theme:'退路を断ち最善を尽くす',qs:[
+{t:'ta',l:'2. 今、あなたが何が何でも達成したいと思っている目標は何ですか。'},
+{t:'ta',l:'3. さまざまな困難が起こりえますが、目標達成の道のりで想定しうる最悪の事態とはどのような事態でしょうか。'},
+{t:'ta',l:'4. 最悪の事態を防ぐために、何をしますか。'},
+{t:'ta',l:'5. どのような大きな困難が待ち受けていたとしても、それを乗り越え、目標を達成するためには、何が必要ですか。'},
+{t:'pledge'},
+]},
+{id:'d5',label:'Day 5',badge:'4th Week - 5th day',theme:'成功の原則に素直に生きる',qs:[
+{t:'ml',l:'1. あなたは過去、自分なりのやり方を貫いて、未達成で終わったことはありますか。',subs:['経験','自分なりのやり方']},
+{t:'ta',l:'2. なぜ、自分なりのやり方を貫いたのだと思いますか。'},
+{t:'ta',l:'3. もし、もう一度するとしたら、どのようにして目標達成をしますか。'},
+]},
+{id:'d6',label:'Day 6',badge:'4th Week - 6th day',theme:'成功の原則に素直に生きる',qs:[
+{t:'ta',l:'4. 今、何が何でも達成したい目標を書き出してください。'},
+{t:'su',l:'5. 問4の目標に対して、現状の結果は満足のいくものですか。',unit:'%'},
+{t:'ml',l:'6. 目標を達成するうえで、誰からでもアドバイスをもらえるとしたら、誰にアドバイスをもらいたいですか。',subs:['アドバイスをもらいたい人（___さん）','どのようにすれば、その人からアドバイスをもらえると思いますか']},
+{t:'ta',l:'7. ここまでの学びを通じて「素直さ」とは何だと思いますか。'},
+{t:'ml',l:'8. あなたが素直に行動できるときとは、どのようなときですか。逆に、素直になりづらいときは、どのようなときですか。',subs:['素直に行動できるとき','素直になりづらいとき']},
+{t:'ta',l:'9. これからさらに成功の原則に素直になるために、あなたはどのような考え方や行動をしますか。'},
+{t:'pledge'},
+]},
+]},
+{id:'s5',label:'STEP5',title:'一流のプロを目指す',days:[
+{id:'d1',label:'Day 1',badge:'5th Week - 1st day',theme:'頂点への道を歩む',qs:[
+{t:'rem',l:'1. あなたは何によって憶えられたいと思いますか。あなたは人生を終えた時、それぞれの人から、どのような人だったと言われたいですか。',fields:['配偶者から','子どもから','職業の仲間から','お客様から','自分自身から','　　　　　から（自由に書き出してください）']},
+{t:'ta',l:'2. 問1で書き出した内容をふまえて、あなたは何によって憶えられたいですか。'},
+]},
+{id:'d2',label:'Day 2',badge:'5th Week - 2nd day',theme:'頂点への道を歩む',qs:[
+{t:'ml',l:'3. あなたの業界や職種における、一流の職業人とは、どのような人ですか。どのような実績を出し、どのような能力を持っていますか。',subs:['実績','能力']},
+{t:'su',l:'4. あなたの現在の実績は、業界のトップ何%に入りますか。',unit:'%'},
+{t:'ta',l:'5. あなたはこれから、どのような実績を出し、所属の業界においてどのような存在となりますか。'},
+{t:'ml',l:'6. 一流の職業人として、実績を出し続けるために、これからどのような能力を身につけますか。',subs:['能力','取り組み']},
+{t:'pledge'},
+]},
+{id:'d3',label:'Day 3',badge:'5th Week - 3rd day',theme:'優れた専門知識を持つ',qs:[
+{t:'p3e',l:'1. あなたの所属している業界や職種で、卓越していると思われる人を3人挙げてください。その人はどのような実績をつくり出していますか。'},
+{t:'ta',l:'2. なぜこの3人は卓越しているのでしょうか。その分野における、どのような専門知識を、どのレベルで身につけていますか。'},
+]},
+{id:'d4',label:'Day 4',badge:'5th Week - 4th day',theme:'優れた専門知識を持つ',qs:[
+{t:'ta',l:'3. あなたの所属している業界や業種で、卓越するために必要だと思う専門知識は何ですか。'},
+{t:'su',l:'4. 今あなたは、卓越するために必要な専門知識を、どの程度持っていますか。（業界トップ何%相当か）',unit:'%'},
+{t:'id10',l:'5. これから専門知識をさらに身につけるうえで、どのような取り組みをしますか。アイディアを10個書き出してください。'},
+{t:'ta',l:'6. 10個書き出したなかから、1週間以内に取り組むことをひとつ決めて下記に宣言してください。'},
+{t:'ta',l:'7. 残りの9個のアイディアすべてに対して、いつ実行するかを決めましょう。スケジュールに落とし込んでください。'},
+{t:'pledge'},
+]},
+{id:'d5',label:'Day 5',badge:'5th Week - 5th day',theme:'強みを活かして道を切り拓く',qs:[
+{t:'ta',l:'1. 過去、あなたが真剣に取り組み、やり切ったことは何ですか。'},
+{t:'ta',l:'2. あなたが得意なことは何ですか。'},
+{t:'ta',l:'3. 誰にも負けない、情熱を持って取り組めることは何ですか。'},
+{t:'ta',l:'4. 問1〜3で書き出したことをふまえ、あなたの強みは何だと思いますか。'},
+{t:'str5',l:'5. 身近な人、5人にあなたの強みを5つずつ書いてもらい、書いてもらった内容を書き写しましょう。'},
+]},
+{id:'d6',label:'Day 6',badge:'5th Week - 6th day',theme:'強みを活かして道を切り拓く',qs:[
+{t:'ta',l:'6. 自分の欠点だと思うことは何ですか。'},
+{t:'ta',l:'7. あなたは、自分の強みを活かして、どのような成果をつくり出しますか。'},
+{t:'ta',l:'8. あなたはこれから、どのようなことに真剣に取り組み、本気で実行しますか。'},
+{t:'ta',l:'9. 今、目の前のことをやり切ったとき、どのような強みがさらに手に入ると思いますか。'},
+{t:'pledge'},
+]},
+]},
+{id:'s6',label:'STEP6',title:'目標を定め思考を集中させる',days:[
+{id:'d1',label:'Day 1',badge:'6th Week - 1st day',theme:'目標を定め思考を集中させる',qs:[
+{t:'ta',l:'1. あなたは先月、どのような目標を立てていましたか。'},
+{t:'ml3',l:'2. 問1で書き出した目標の達成率はどれくらいでしたか。よかった点・よりよくできる点は何ですか。',subs:['達成率（　　%）','よかった点','よりよくできる点']},
+{t:'ta',l:'3. その目標を設定した時点で、達成のプロセスをどの程度明確に逆算していましたか。'},
+{t:'ta',l:'4. もし、もう一度同じ目標を目指すとしたら、目標設定の時点でどのようにプロセスを逆算しますか。'},
+]},
+{id:'d2',label:'Day 2',badge:'6th Week - 2nd day',theme:'目標を定め思考を集中させる',qs:[
+{t:'ta',l:'5. あなたが次に目指す目標を設定しましょう。仕事においてどのようなビジョンを実現したいですか。'},
+{t:'ml3',l:'6. 問5のビジョンを実現するために、長期・中期・短期目標を書き出しましょう。',subs:['長期目標（5年以上）','中期目標（1年〜5年）','短期目標（1年以内）']},
+]},
+{id:'d3',label:'Day 3',badge:'6th Week - 3rd day',theme:'目標を定め思考を集中させる',qs:[
+{t:'ta',l:'7. 問6で設定した短期目標について、すでに達成していることをイメージしてください。なぜ達成することができたのでしょうか。プロセスをイメージし、書き出してみてください。'},
+{t:'ta',l:'8. 問7で書き出したプロセスを加速させるアイディアを考えましょう。新しく何を始めますか。力を借りた方がよい人はいますか。'},
+{t:'ta',l:'9. 問7のプロセスのなかで人・物・お金・情報・状況など、障害となりそうなものはあるでしょうか。'},
+{t:'ta',l:'10. 問9の障害を乗り越え、必ず目標を達成するためには、どのようなことを想定しておく必要がありますか。'},
+{t:'pledge'},
+]},
+{id:'d4',label:'Day 4',badge:'6th Week - 4th day',theme:'目標を定め思考を集中させる',qs:[
+{t:'gtbl',l:'1. Section1で設定した長期、中期、短期の目標について、具体的な期日と定量化された指標をあらためて確認しましょう。'},
+]},
+{id:'d5',label:'Day 5',badge:'6th Week - 5th day',theme:'効果的な目標設定技法',qs:[
+{t:'ta',l:'2. 過去、あなたにとって大きな成長をもたらした、チャレンジゾーンの目標達成について書き出してください。'},
+{t:'ta',l:'3. 過去、あなたにとって価値ある経験となった、キャリアゾーンの目標達成について書き出してください。'},
+{t:'ta',l:'4. 過去、あなたにとってあまり達成感を覚えなかった目標達成経験について書き出してください。'},
+{t:'ta',l:'5. 問2〜4で書き出した回答をふまえ、あなたはどのような目標設定をしがちですか。'},
+{t:'ta',l:'6. 今、あなたが立てている目標を見つめなおしましょう。あなたに成長をもたらすチャレンジゾーンの目標とは、どのような目標になりますか。'},
+]},
+{id:'d6',label:'Day 6',badge:'6th Week - 6th day',theme:'効果的な目標設定技法',qs:[
+{t:'5fg',l:'7. 5つの基本的欲求の分野ごとに目標を設定しましょう。'},
+{t:'pledge'},
+]},
+]},
+{id:'s7',label:'STEP7',title:'時間を味方にする',days:[
+{id:'d1',label:'Day 1',badge:'7th Week - 1st day',theme:'時間を制し人生を制す',qs:[
+{t:'tl',l:'1. 昨日1日の時間の使い方を、事実にもとづき、タイムライン形式で書き出してみましょう。（昨日のタイムライン）'},
+{t:'tl2',l:'理想の1日タイムライン（人生最後の1日として）'},
+{t:'ml',l:'3. 問1で書き出したタイムラインを見て、価値ある時間と無駄な時間を確認して記録しましょう。',subs:['価値ある時間（　　時間）','無駄に過ごしてしまった時間（　　時間）']},
+{t:'tcng',l:'4. なくす予定・減らす時間・変わらない予定（表）'},
+]},
+{id:'d2',label:'Day 2',badge:'7th Week - 2nd day',theme:'時間を制し人生を制す',qs:[
+{t:'hlt',l:'5. あなたが健康に過ごせる残りの時間、人生の残りの時間を計算しましょう。'},
+{t:'ml3',l:'6. あなたの大切な人を思い浮かべてください。その人とあなたは、1年に何日、時間をともにしますか。人生が終わりを迎えるまでに、合計で何日ありますか。',subs:['大切な人','一年間で一緒に過ごす時間（　　日）','あと何日一緒に過ごすことができるか（　　日）']},
+{t:'wkt',l:'7. 仕事について考えましょう。残りの人生で、健康な身体で自由に仕事ができる時間を計算しましょう。'},
+{t:'ta',l:'8. これからの人生で、あなたは誰と、どのように時間を使いますか。本当に大切な時間の使い方とは、どのようなものかを具体的に書き出しましょう。'},
+{t:'pledge'},
+]},
+{id:'d3',label:'Day 3',badge:'7th Week - 3rd day',theme:'努力よりも正しい選択をする',qs:[
+{t:'ta',l:'1. 今、何が何でも達成したい目標を書き出してください。'},
+{t:'ta',l:'2. あなたが今、問1の目標を達成するために取り組んでいる、トップ20%の優先事項は何ですか。具体的に書いてください。'},
+{t:'t20',l:'3. あなたが目指す目標と同じような目標を達成している人の名前を最大5名挙げてください。その人たちの目標達成をつくり出しているトップ20%の優先事項は何でしょうか。'},
+]},
+{id:'d4',label:'Day 4',badge:'7th Week - 4th day',theme:'努力よりも正しい選択をする',qs:[
+{t:'ta',l:'4. 問1〜3をふまえ、改めて、あなたが目標達成をするためのトップ20%の優先事項を考えてください。'},
+{t:'ta',l:'5. 問4のトップ20%の優先事項を本当にすべて実行したとしたら、あなたはどのような成果をつくることができるでしょうか。'},
+{t:'ta',l:'6. トップ20%の優先事項を実行するための計画を立てましょう。いつ、どこで、どのように実行しますか。'},
+{t:'pledge'},
+]},
+{id:'d5',label:'Day 5',badge:'7th Week - 5th day',theme:'努力よりも正しい選択をする',qs:[
+{t:'4q',l:'1. あなたは、先月1か月間のなかで、第1〜4象限それぞれのことがらにどのくらいの時間を使っていましたか。5つの分野で書き出してください。'},
+{t:'ta',l:'2. もしもう一度先月を繰り返すとしたら、どのような第2象限のできごと（緊急ではないが重要なこと）に時間を使うべきだと考えますか。'},
+{t:'ml3',l:'3. あなたにとって成果をつくるために必要な第2象限とは何ですか。',subs:['成果をつくる第2象限','第2象限に時間を割くことよりも優先してしまっているもの','第2象限よりも優先してしまっている原因と、必要な第2象限の時間を確保するための方法']},
+]},
+{id:'d6',label:'Day 6',badge:'7th Week - 6th day',theme:'未来創造のプライオリティマネジメント',qs:[
+{t:'ta',l:'4. あなたが中長期（5〜10年後）で達成したい目標は何ですか。目標に対する現在の状態はどのような状態ですか。'},
+{t:'ta',l:'5. ギャップを埋めるために、具体的に何を実行すべきですか。いつ、誰と、どこで、どんなことに、どれくらい取り組みますか。'},
+{t:'ta',l:'6. 今、あなたが立てた計画を実践すれば、本当にその目標を達成すると思えていますか。「確信できるレベル」まで計画を立て直してください。'},
+{t:'ta',l:'7. このような未来創造の時間、プライムタイムをいつ、どこで、どのようにしてとるか、具体的なシチュエーションを考えてください。'},
+{t:'pledge'},
+]},
+]},
+{id:'s8',label:'STEP8',title:'パワーパートナーを持つ',days:[
+{id:'d1',label:'Day 1',badge:'8th Week - 1st day',theme:'偉業を成就させるパワーパートナーの力',qs:[
+{t:'ta',l:'1. あなたがどうしても達成したい目標や、成し遂げたいビジョンは何ですか。'},
+{t:'ta',l:'2. あなたは今、目標達成やビジョンの実現にあたり、パワーパートナーと呼べる人がいますか。どのような力を借りていますか。'},
+]},
+{id:'d2',label:'Day 2',badge:'8th Week - 2nd day',theme:'偉業を成就させるパワーパートナーの力',qs:[
+{t:'pp3n',l:'3. 目標達成やビジョン実現のために、誰でもパワーパートナーにすることができるとしたら、誰をパワーパートナーとしたいですか。その人たちとの共通の目的目標は何ですか。（3人）'},
+{t:'ta',l:'4. 問3で書き出したすべてのパワーパートナーの力を借りることができたとしたら、目標達成やビジョン実現の道のりに、どのような違いがありますか。'},
+{t:'ta',l:'5. 問3で書き出した人たちとパワーパートナーとなるために、障害となるものはありますか。'},
+]},
+{id:'d3',label:'Day 3',badge:'8th Week - 3rd day',theme:'偉業を成就させるパワーパートナーの力',qs:[
+{t:'ta',l:'6. 障害を乗り越え、目標達成やビジョン実現に向かう力を生み出すのは目的です。誰のために、何のために、なぜその目標達成を目指していますか。'},
+{t:'pp3pl',l:'7. 具体的に、パワーパートナーの力を借りる計画を立ててください。誰に、いつ、どのようにして力を借りるかを明確にしましょう。（3組）'},
+{t:'pledge'},
+]},
+{id:'d4',label:'Day 4',badge:'8th Week - 4th day',theme:'強い絆で結ばれた真の協力者を得る技術',qs:[
+{t:'pp4r',l:'1. まずは、パワーパートナーの求めるものについて考えていきましょう。あなたのパワーパートナーを書き出してください。その人たちが求めているものは何ですか。どのような関係性を今、築いていますか。（4人）'},
+]},
+{id:'d5',label:'Day 5',badge:'8th Week - 5th day',theme:'強い絆で結ばれた真の協力者を得る技術',qs:[
+{t:'ta',l:'2. あなたはパワーパートナーから、これまで、何を与えられてきましたか。'},
+{t:'ta',l:'3. あなたはパワーパートナーに対して、これまで何を与えてきましたか。'},
+{t:'ta',l:'4. 100%見返りを求めない愛とは、何だと思いますか。このセクションを通して学んだことをまとめてください。'},
+{t:'pp4g',l:'5. あなたは、これから、パワーパートナーが求めているものを手にするためにどのような支援を行いますか。（4人）'},
+]},
+{id:'d6',label:'Day 6',badge:'8th Week - 6th day',theme:'強い絆で結ばれた真の協力者を得る技術',qs:[
+{t:'ta',l:'6. あなたは普段、どのような考え方や心構えで、パワーパートナーと接していますか。'},
+{t:'ta',l:'7. パワーパートナーと、さらに強い絆で結ばれるために、これからあなたはどのような考え方や心構えで、パワーパートナーと接しますか。'},
+{t:'pledge'},
+]},
+]},
+{id:'s9',label:'STEP9',title:'自分の人生を自分で選択する',days:[
+{id:'d1',label:'Day 1',badge:'9th Week - 1st day',theme:'自分の人生を自分で選択する',qs:[
+{t:'qw',l:'1. あなたの5つの基本的欲求を満たしてくれる人・物・理想・状況・価値観などのイメージ写真が集まったものを「上質世界」と言います。今、あなたの上質世界のなかには、どのようなイメージ写真が貼り付いていますか。'},
+{t:'ta',l:'2. 以前上質世界に入れていたもので、現在は上質世界に入っていないものはありますか。'},
+{t:'ta',l:'3. なぜ、問2の項目は、現在あなたの上質世界に入っていないのでしょうか。'},
+]},
+{id:'d2',label:'Day 2',badge:'9th Week - 2nd day',theme:'自分の人生を自分で選択する',qs:[
+{t:'ta',l:'4. 逆に、以前は上質世界に入れていなかったもので、現在は上質世界に入っているものはありますか。'},
+{t:'ta',l:'5. あなたの上質世界に入れているものは、あなたの人生にどのような影響を与えていると思いますか。'},
+{t:'ta',l:'6. あなたが、人生をより効果的にコントロールするとしたら、何を上質世界に入れるとよいでしょうか。'},
+{t:'ta',l:'7. 問6で書き出したものは、どうすればあなたの上質世界に入れることができるでしょうか。'},
+{t:'pledge'},
+]},
+{id:'d3',label:'Day 3',badge:'9th Week - 3rd day',theme:'自分の人生を自分で選択する',qs:[
+{t:'ctlck',l:'1. 人生にはあなたがコントロールできるものとできないものが存在します。以下の項目のなかで「自分がコントロールできる」と思ったものにチェックをつけてください。',items:['自分の考え方','今日の天気','明日の予定','部下の言い訳','時間に遅れているバス','一日の運動量','先月の売上','配偶者からの不満','自分の性格','営業の面会数','1か月の食費','暑くて出る汗','悲しいという感情','前回の模試の点数','行動の早さ','人からの評価','人への関わり方','自分の欲求','自分の願望','仕事のやりがい','部下の願望']},
+{t:'ta',l:'2. あなたが今、コントロールできると思っていて、実際にコントロールしていないことはありますか。'},
+]},
+{id:'d4',label:'Day 4',badge:'9th Week - 4th day',theme:'自分の人生を自分で選択する',qs:[
+{t:'ta',l:'3. 問2で書き出したものについて、なぜあなたはコントロールしていないのでしょうか。コントロールするための障害となっていると思うものを書き出してください。'},
+{t:'ta',l:'4. あなたが今、コントロールできないと思っていて、実際にはコントロールできることはあるでしょうか。'},
+{t:'ta',l:'5. 問2〜4をふまえて、成果を出している未来のあなたは何をコントロールしているでしょうか。'},
+{t:'ta',l:'6. あなたのコントロールできる領域をさらに拡張するために、これからどのようなことに取り組みますか。'},
+{t:'pledge'},
+]},
+{id:'d5',label:'Day 5',badge:'9th Week - 5th day',theme:'人生を創造するセルフカウンセリング技法',qs:[
+{t:'sc',l:'1. セルフカウンセリングの4つの問いについて考えてみましょう。'},
+]},
+{id:'d6',label:'Day 6',badge:'9th Week - 6th day',theme:'人生を創造するセルフカウンセリング技法',qs:[
+{t:'coth',l:'2. セルフカウンセリングの主語を、あなたの大切な人に変えてみましょう。（配偶者・パートナー、職場の仲間、お客様）'},
+{t:'ta',l:'3. もし、毎日セルフカウンセリングをし続けたとしたら、あなたは何を得ることができるでしょうか。'},
+{t:'ta',l:'4. セルフカウンセリングは定期的に何度も自分に問いかけることが大切です。あなたはこれから、いつ、どのようにセルフカウンセリングを実行しますか。'},
+{t:'pledge'},
+]},
+]},
+{id:'s10',label:'STEP10',title:'自己概念を高める',days:[
+{id:'d1',label:'Day 1',badge:'10th Week - 1st day',theme:'願望成就の土台となる自己概念',qs:[
+{t:'sc5',l:'1. 次の5つの質問に答えてください。（非常にそう思う〜全くそう思わない）',items:['私は目標を達成できる人間だ','私は人の役に立つことができる人間だ','私は愛される価値がある人間だ','私は必要とされる人間だ','私は成功できる人間だ']},
+{t:'ta',l:'2. 問1をふまえ、あなたが日頃、自分のことをどのような存在だと思っているかについて、まとめましょう。'},
+{t:'ta',l:'3. 問1の質問すべてにおいて「非常にそう思う」と答えられる自分だとしたら、いまと比べてつくりだしている成果や人脈、得ている報酬に違いはありますか。'},
+]},
+{id:'d2',label:'Day 2',badge:'10th Week - 2nd day',theme:'願望成就の土台となる自己概念',qs:[
+{t:'ta',l:'4. 今、あなたの自己概念に影響を与えているものはどのようなものがあると思いますか。あなたの自己概念は何によって育まれていますか。'},
+{t:'ta',l:'5. もし何の制限もないとしたら、どのような自分になりたいですか。理想の自分について、具体的にイメージしてください。'},
+{t:'ids',l:'6. あなたがすでに理想の自分になっていたとしたら、どのような行動をしているでしょうか。'},
+{t:'ml3',l:'7. 自己概念の基盤をつくるものは、日々の小さな目標達成です。今日一日、今週、今月積み上げる達成を具体的にまとめてください。',subs:['今日達成すること','今週達成すること','今月達成すること']},
+{t:'pledge'},
+]},
+{id:'d3',label:'Day 3',badge:'10th Week - 3rd day',theme:'不可能を可能に変える愛の力',qs:[
+{t:'lvh',l:'1. あなた自身の過去を振り返りましょう。幼少期・学生時代・社会に出てから、それぞれの時期において、あなたを愛し、支えてくれた人はどのような人でしたか。'},
+{t:'ta',l:'2. 問1で書き出した内容や、このセクションの学びをとおして、愛の持つ力とは何かについて、自分の言葉でまとめてください。'},
+{t:'ta',l:'3. あなたは誰のために、何のために、なぜ、どのような成功をしなければならないのでしょうか。改めて書き出してください。'},
+]},
+{id:'d4',label:'Day 4',badge:'10th Week - 4th day',theme:'不可能を可能に変える愛の力',qs:[
+{t:'ta',l:'4. 愛を与えるとは、どのような行動をすることだと思いますか。'},
+{t:'ta',l:'5. あなたは今、誰にどのような愛を与えていますか。'},
+{t:'ta',l:'6. これからさらに、誰にどのような愛を与えていきたいですか。'},
+{t:'pledge'},
+]},
+{id:'d5',label:'Day 5',badge:'10th Week - 5th day',theme:'勝利者としてのストーリーを生きる',qs:[
+{t:'ta',l:'1. あなたにとって、ネガティブな感情を引き起こす過去の出来事はありますか。それはどのような出来事ですか。'},
+{t:'ta',l:'2. その出来事から引き起こされるネガティブな感情とは、どのようなものですか。'},
+{t:'ta',l:'3. あなたは今、その出来事について、どのような解釈をしていますか。'},
+{t:'ml',l:'4. あなたがその解釈を選択することによって、得ているもの・失っているものはありますか。',subs:['得ているもの','失っているもの']},
+]},
+{id:'d6',label:'Day 6',badge:'10th Week - 6th day',theme:'勝利者としてのストーリーを生きる',qs:[
+{t:'ta',l:'5. あなたはこれから勝利者として、どのような人生を送りますか。何を手に入れ、誰を幸せにしますか。'},
+{t:'ta',l:'6. 問5で書き出した、勝利者としての人生を送っているとき、あなたは問1で書き出した過去の出来事をどのように捉えているでしょうか。過去の出来事は、あなたにとってどのような意味があるものとなりますか。'},
+]},
+]},
+{id:'s11',label:'STEP11',title:'感情をコントロールする',days:[
+{id:'d1',label:'Day 1',badge:'11th Week - 1st day',theme:'弱さを乗り越える',qs:[
+{t:'em6',l:'1. 次のような状況のとき、あなたは何を考え、どのような感情になりますか。',items:['①高い目標を目指していて、未達成に終わったとき','②やることがたくさんあり、終わりがみえないとき','③周りからあなたのミスを指摘されたとき','④ビジョンを発信しても、共感が得られないとき','⑤成果を出している人が、評価されているのを聞いたとき','⑥人と比較されたとき']},
+{t:'ta',l:'2. あなたは、自分がどのような弱さを持っていると思いますか。抱きやすいネガティブな感情はありますか。'},
+{t:'ml',l:'3. あなたは問2で書き出した感情を持つことによって、何を得ていますか。逆に、その感情を持つことで失っているものは何ですか。',subs:['得ているもの','失っているもの']},
+]},
+{id:'d2',label:'Day 2',badge:'11th Week - 2nd day',theme:'弱さを乗り越える',qs:[
+{t:'ta',l:'4. どのような状況のとき、ネガティブな感情を持ちますか。あなたが不安や恐れ、怒りや悲しみ、恨みを持ちがちな状況について具体的に書き出してください。'},
+{t:'ta',l:'5. 問4で書き出した、あなたが弱い心を選択してしまう状況において、前に進むためには、どのような思考と行為を選択するとよいでしょうか。'},
+{t:'pledge'},
+]},
+{id:'d3',label:'Day 3',badge:'11th Week - 3rd day',theme:'悪しき習慣を断つ',qs:[
+{t:'ta',l:'1. 自分の人生にとって、効果的ではないと頭ではわかっていてもついしてしまう「悪しき習慣」はありますか。'},
+{t:'ta',l:'2. もし、その「悪しき習慣」を生涯続けたら、あなたはどのような人生を送ることになるでしょうか。'},
+]},
+{id:'d4',label:'Day 4',badge:'11th Week - 4th day',theme:'悪しき習慣を断つ',qs:[
+{t:'ta',l:'3. 人生の目的に立ち返りましょう。あなたの人生の目的は何ですか。あなたが心から求め、実現したいと思っていることは何ですか。'},
+{t:'ta',l:'4. 問3で書き出した、求めている人生を実現しているとき、あなたは悪しき習慣とどのように向き合い、乗り越えていますか。'},
+{t:'ta',l:'5. 「悪しき習慣」を変えていくための計画を立てましょう。あなたがつい、悪しき習慣に流されてしまいがちな状況とは、どのような状況ですか。'},
+{t:'ta',l:'6. 問5で書き出した状況において、「悪しき習慣」に流されないために、あなたは誰と、どのような行動に取り組みますか。'},
+{t:'pledge'},
+]},
+{id:'d5',label:'Day 5',badge:'11th Week - 5th day',theme:'よい習慣を体得する',qs:[
+{t:'s3h',l:'1. あなたが理想とする成功者を3名思い浮かべてください。その人たちは、どのようなよい習慣を持っていますか。'},
+{t:'h4g',l:'2. あなたが今、身につけている習慣について振り返りましょう。ビジネスやプライベートにおいて、どのような習慣を持っていますか。よい習慣も悪い習慣も書き出してみましょう。'},
+{t:'ml',l:'3. あなたが今身につけている習慣は、あなたの人生において、いつ、どのようにして育まれたものだと思いますか。',subs:['よい習慣の育まれ方','悪い習慣の育まれ方']},
+]},
+{id:'d6',label:'Day 6',badge:'11th Week - 6th day',theme:'よい習慣を体得する',qs:[
+{t:'ta',l:'4. もし、あなたが求めているものを手に入れ、成功している自分だとしたら、どのような習慣を持ち、日々生活をしていると思いますか。'},
+{t:'ta',l:'5. 習慣形成のポイントは、小さなことから始めることです。これから成功者の習慣を体得するために、どのようなことに取り組みますか。どのような小さなことから始め、習慣にするか、具体的に計画を立ててください。'},
+{t:'mng',l:'6. 成功者の習慣形成の第一歩は、朝の時間の使い方です。毎朝、目的・目標を確認し、計画を立てる時間をどのように確保しますか。'},
+{t:'pledge'},
+]},
+]},
+{id:'s12',label:'STEP12',title:'決断力を高める',days:[
+{id:'d1',label:'Day 1',badge:'12th Week - 1st day',theme:'決めて断つ',qs:[
+{t:'ta',l:'1. あなたがこれまでの人生で下した「大きな決断」には、どのようなものがありますか。'},
+{t:'ta',l:'2. 問1で書き出した決断の源にあったものは何でしたか。どのような思いや信念がありましたか。'},
+{t:'ml',l:'3. あなたの人生のなかで、決断しきれなかった経験はありますか。決断しきれなかった理由は何でしょうか。',subs:['決断しきれなかった経験','決断しきれなかった理由']},
+]},
+{id:'d2',label:'Day 2',badge:'12th Week - 2nd day',theme:'決めて断つ',qs:[
+{t:'ta',l:'4. ここまでの学びを通じて、決断をするためには何が必要だと思いますか。あなたの言葉でまとめてください。'},
+{t:'ta',l:'5. あなたがこのプログラムを購入し、必ず手に入れると決断した「成功」とはどのようなものでしたか。当時の決断を今、正解にすることができていますか。さらに改善できるポイントがあれば書き出してください。'},
+]},
+{id:'d3',label:'Day 3',badge:'12th Week - 3rd day',theme:'決めて断つ',qs:[
+{t:'ml3',l:'6. あなたが今、長期的・本質的・客観的にみて、決断する必要があるのはどのようなことですか。',subs:['長期的・・・5年後、10年後の自分からみて、今、何をすべきでしょうか。','本質的・・・原理原則や、あなたの人生理念に照らし合わせたとき、今、何をすべきでしょうか。','客観的・・・成功している人、理想とする人、尊敬する人の視点に立って考えたとき、今、何をすべきでしょうか。']},
+{t:'ta',l:'長期的・本質的・客観的に考えて、あなたは今、何を決断し実行しますか。'},
+{t:'ta',l:'7. 問6で書き出した決断によって、あなたは何を断ち切りますか。'},
+{t:'ta',l:'8. 決断を正解にするために、これから日々、あなたは何を実践しますか。'},
+{t:'pledge'},
+]},
+{id:'d4',label:'Day 4',badge:'12th Week - 4th day',theme:'実践に臨む',qs:[
+{t:'ta',l:'1. あなたが今、決断をしていることは何ですか。Step12-1を振り返りながら記入してください。'},
+{t:'ta',l:'2. 決断したことを現実に正解にするために、どのような計画を立てていますか。トップ20%の優先事項を書き出してください。'},
+]},
+{id:'d5',label:'Day 5',badge:'12th Week - 5th day',theme:'実践に臨む',qs:[
+{t:'ml',l:'3. 問2で書き出した計画を、目標達成のために充分なスピードとクオリティで実践していますか。10点満点で点数をつけ、その点数の理由を書いてください。',subs:['スピード（　　点）理由','クオリティ（　　点）理由']},
+{t:'ta',l:'4. 今、あなたが最優先の事柄について、充分なスピードとクオリティで実践することを妨げているものがあるとしたら、それは何ですか。'},
+{t:'ta',l:'5. さらに実行のスピードとクオリティを向上させるために、あなたの何を変える必要がありますか。'},
+]},
+{id:'d6',label:'Day 6',badge:'12th Week - 6th day',theme:'実践に臨む',qs:[
+{t:'ta',l:'6. 決断したことを実行する際、さまざまな障害にぶつかることがあります。どのような困難や、障害が予想されますか。'},
+{t:'ta',l:'7. 問6で書き出した障害を乗り越えるために、あなたは何をしますか。'},
+{t:'pledge'},
+]},
+]},
+{id:'s13',label:'STEP13',title:'志を磨き社会に還元する',days:[
+{id:'d1',label:'Day 1',badge:'13th Week - 1st day',theme:'志を磨き社会に還元する',qs:[
+{t:'ta',l:'1. あなたの人生の目的は何ですか。誰のために、何のために、何を実現しますか。'},
+{t:'ta',l:'2. あなたは縁ある人の人生に、どのように貢献していきますか。'},
+{t:'ta',l:'3. あなたは職業を通して、どのように社会に貢献しますか。'},
+]},
+{id:'d2',label:'Day 2',badge:'13th Week - 2nd day',theme:'志を磨き社会に還元する',qs:[
+{t:'ta',l:'4. 「志」とは、個人の願望というレベルを超えて、誰かのため、社会のために成し遂げたいビジョン、目標のことです。あなたの「志」を一言で表すとしたら、どのようなものになりますか。'},
+{t:'ta',l:'5. 問4で書き出した「志」を、あなたが果たさなければいけない理由は何ですか。あなたはなぜ、その「志」を持つに至ったのでしょうか。'},
+]},
+{id:'d3',label:'Day 3',badge:'13th Week - 3rd day',theme:'志を磨き社会に還元する',qs:[
+{t:'ta',l:'6. これからさらに「志」を磨くために、何をしますか。どのような人と会い、どのような情報を得ますか。'},
+{t:'ta',l:'7. 「志」を果たすために、あなたはどのような力を持つ必要がありますか。具体的にどのような能力が必要か、書き出しましょう。'},
+{t:'pledge'},
+]},
+{id:'d4',label:'Day 4',badge:'13th Week - 4th day',theme:'リーダーとして生きる',qs:[
+{t:'ta',l:'1. あなたが過去、リーダーシップを発揮していたときを思い出してください。リーダーシップを発揮してあなたは何を成し遂げましたか。'},
+{t:'ta',l:'2. あなたはなぜ、リーダーシップを発揮することができたのでしょうか。どのような考え方や行動が、リーダーシップの発揮につながっていると思いますか。'},
+]},
+{id:'d5',label:'Day 5',badge:'13th Week - 5th day',theme:'リーダーとして生きる',qs:[
+{t:'ld3',l:'3. あなたの周りでリーダーシップを発揮していると思う人を思い浮かべてください。その人たちの、どのような考え方や行動が、リーダーシップの発揮につながっていると思いますか。（3人）'},
+]},
+{id:'d6',label:'Day 6',badge:'13th Week - 6th day',theme:'リーダーとして生きる',qs:[
+{t:'ta',l:'4. あなたはどのようなリーダーを目指していますか。どのくらいの人を、どのようにして巻き込み、何を成すリーダーになりたいですか。'},
+{t:'ta',l:'5. リーダーシップとは、地位や肩書に関係なく発揮される力です。今あなたが、さらにリーダーシップを発揮するとしたら、どのような場面で、どのような行動をとりますか。'},
+{t:'ta',l:'6. リーダーシップを高めるために、あなたはこれから何に挑戦しますか。'},
+{t:'pledge'},
+]},
+]},
+];
+// ===== STATE =====
+let cs=0,cd=0;
+const rounds={},rmax={};
+const rk=(si,di)=>`${STEPS[si].id}_${STEPS[si].days[di].id}`;
+const dkey=(si,di,r)=>`mp3_${STEPS[si].id}_${STEPS[si].days[di].id}_r${r}`;
+
+// ===== BUILD HTML =====
+function buildAll(){
+  const st=document.getElementById('stepTabs');
+  STEPS.forEach((s,i)=>{
+    const d=document.createElement('div');d.className='step-tab'+(i===0?' active':'');
+    d.textContent=s.label;d.onclick=()=>activateStep(i);st.appendChild(d);
+  });
+  const ht=document.createElement('div');ht.className='step-tab';ht.id='histTab';
+  ht.textContent='📋 履歴';ht.onclick=showHistory;st.appendChild(ht);
+  const mc=document.getElementById('mainContent');
+  STEPS.forEach((step,si)=>{
+    const sp=document.createElement('div');sp.className='step-panel';sp.id='sp_'+si;
+    step.days.forEach((day,di)=>{
+      const dp=document.createElement('div');dp.className='day-panel';dp.id=`dp_${si}_${di}`;
+      dp.innerHTML=buildDay(step,day,si,di);sp.appendChild(dp);
+    });
+    mc.appendChild(sp);
+  });
+  const hp=document.createElement('div');hp.id='historyPanel';hp.style.display='none';mc.appendChild(hp);
+  activateStep(0);
+}
+
+function buildDay(step,day,si,di){
+  const k=rk(si,di);
+  let h=`<div class="day-hdr"><div class="day-badge">${day.badge}</div><div class="day-theme">${day.theme}</div><div class="day-week">${step.title}</div></div>
+<div class="round-row" id="rr_${k}"><span class="round-lbl">周回：</span><button class="round-btn active" onclick="switchRound(${si},${di},1)">1</button><button class="add-round" onclick="addRound(${si},${di})" title="周回追加">＋</button></div>`;
+  day.qs.forEach((q,qi)=>{h+=bq(q,si,di,qi);});
+  return h;
+}
+
+const as=(si,di)=>`autoSave(${si},${di})`;
+const pid=(si,di,qi,s='')=>`${rk(si,di)}_r1_q${qi}${s}`;
+
+function bq(q,si,di,qi){
+  const p=pid(si,di,qi);const a=as(si,di);
+  if(q.t==='ta') return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body"><textarea id="${p}" rows="3" placeholder="…" oninput="autoResize(this);${a}"></textarea></div></div>`;
+  if(q.t==='pledge') return `<div class="pledge"><div class="pledge-ttl">— 実践への誓い —</div><textarea id="${p}" rows="3" placeholder="今日から実践することを宣言する…" oninput="autoResize(this);${a}"></textarea></div>`;
+  if(q.t==='su') return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body"><div class="score-row"><input type="number" class="score-inp" id="${p}_v" min="0" max="100" placeholder="0" oninput="${a}"><span class="score-lbl">${q.unit}</span></div></div></div>`;
+  if(q.t==='ml'||q.t==='ml3'){
+    const inner=q.subs.map((s,i)=>`<span class="sub-lbl">${s}</span><textarea id="${p}_s${i}" rows="2" placeholder="…" oninput="autoResize(this);${a}"></textarea>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">${inner}</div></div>`;
+  }
+  if(q.t==='cb'){
+    const boxes=q.items.map((it,i)=>`<label class="ci"><input type="checkbox" id="${p}_c${i}" onchange="${a}"><label for="${p}_c${i}">${it}</label></label>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body"><div class="cb-grid">${boxes}</div></div></div>`;
+  }
+  if(q.t==='cbf'){
+    const boxes=q.items.map((it,i)=>`<label class="ci"><input type="checkbox" id="${p}_c${i}" onchange="${a}"><label for="${p}_c${i}">${it}</label></label>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body"><div class="cb-grid" style="grid-template-columns:1fr 1fr 1fr 1fr">${boxes}</div><span class="sub-lbl" style="margin-top:8px">自由記入欄</span><textarea id="${p}_free" rows="2" placeholder="キーワードを自由に記入…" oninput="autoResize(this);${a}"></textarea></div></div>`;
+  }
+  if(q.t==='sc4'){
+    const rows=q.items.map((it,i)=>`<tr><td class="rl">${it}</td><td><input type="number" id="${p}_v${i}" min="0" max="100" placeholder="0" onchange="${a}" style="width:70px;text-align:center;font-weight:700"></td></tr>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body"><table class="tbl"><thead><tr><th>項目</th><th style="width:90px">点数（0〜100）</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  }
+  if(q.t==='r4'){
+    const inner=q.items.map((it,i)=>`<span class="sub-lbl">${it}</span><textarea id="${p}_r${i}" rows="2" placeholder="…" oninput="autoResize(this);${a}"></textarea>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">${inner}</div></div>`;
+  }
+  if(q.t==='pn3'){
+    const inner=q.items.map((it,i)=>`<div class="pg"><div class="pg-ttl">${it}</div><span class="sub-lbl">ネガティブ</span><textarea id="${p}_neg${i}" rows="2" placeholder="…" oninput="autoResize(this);${a}"></textarea><span class="sub-lbl">ポジティブ</span><textarea id="${p}_pos${i}" rows="2" placeholder="…" oninput="autoResize(this);${a}"></textarea></div>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">${inner}</div></div>`;
+  }
+  if(q.t==='persons1'){
+    const inner=q.fields.map((f,i)=>`<span class="sub-lbl">${f}</span><textarea id="${p}_f${i}" rows="1" placeholder="…" oninput="autoResize(this);${a}"></textarea>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">${inner}</div></div>`;
+  }
+  if(q.t==='p3g'){
+    const inner=[1,2,3].map(n=>`<div class="pg"><input class="ni" id="${p}_n${n}" placeholder="名前" oninput="${a}"><span class="sub-lbl">達成した目標</span><textarea id="${p}_g${n}" rows="1" placeholder="…" oninput="autoResize(this);${a}"></textarea><span class="sub-lbl">支払った代価</span><textarea id="${p}_c${n}" rows="1" placeholder="…" oninput="autoResize(this);${a}"></textarea></div>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">${inner}</div></div>`;
+  }
+  if(q.t==='p3e'){
+    const rows=[1,2,3].map(n=>`<tr><td><input type="text" id="${p}_n${n}" placeholder="名前" onchange="${a}" style="width:100%;border:none;padding:5px 8px;font-family:inherit;font-size:12px;background:transparent;outline:none"></td><td><input type="text" id="${p}_r${n}" placeholder="実績" onchange="${a}" style="width:100%;border:none;padding:5px 8px;font-family:inherit;font-size:12px;background:transparent;outline:none"></td></tr>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body"><table class="tbl"><thead><tr><th>名前</th><th>実績</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  }
+  if(q.t==='lstg'){
+    const rows=['学習の段階','指導力開発の段階','挑戦の段階','富の形成の段階','社会還元の段階'].map((s,i)=>`<tr><td><input type="text" id="${p}_age${i}" placeholder="歳〜歳" onchange="${a}" style="width:100%;border:none;padding:5px 8px;font-family:inherit;font-size:12px;background:transparent;outline:none"></td><td class="rl">${s}</td><td><input type="text" id="${p}_td${i}" placeholder="取り組むこと" onchange="${a}" style="width:100%;border:none;padding:5px 8px;font-family:inherit;font-size:12px;background:transparent;outline:none"></td></tr>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body"><table class="tbl"><thead><tr><th style="width:22%">年齢</th><th style="width:34%">段階</th><th>取り組むこと</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  }
+  if(q.t==='env'){
+    const inner=q.items.map((it,i)=>`<span class="sub-lbl">${it}</span><textarea id="${p}_e${i}" rows="2" placeholder="…" oninput="autoResize(this);${a}"></textarea>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">${inner}</div></div>`;
+  }
+  if(q.t==='roles5'){
+    const inner=[1,2,3,4,5].map(n=>`<div class="pg"><span class="sub-lbl">役割${n}</span><input class="ni" id="${p}_role${n}" placeholder="例：親、経営者…" oninput="${a}"><span class="sub-lbl">暗示の言葉</span><textarea id="${p}_word${n}" rows="2" placeholder="私は…" oninput="autoResize(this);${a}"></textarea></div>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">${inner}</div></div>`;
+  }
+  if(q.t==='rem'){
+    const inner=q.fields.map((f,i)=>`<span class="sub-lbl">『${f}』</span><textarea id="${p}_f${i}" rows="2" placeholder="…" oninput="autoResize(this);${a}"></textarea>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">${inner}</div></div>`;
+  }
+  if(q.t==='str5'){
+    const inner=[1,2,3,4,5].map(n=>`<div class="pg"><input class="ni" id="${p}_n${n}" placeholder="名前" oninput="${a}"><span class="sub-lbl">あなたの強み（5つ）</span><textarea id="${p}_s${n}" rows="3" placeholder="…" oninput="autoResize(this);${a}"></textarea></div>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">${inner}</div></div>`;
+  }
+  if(q.t==='id10'){
+    const inner=[1,2,3,4,5,6,7,8,9,10].map(n=>`<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:5px"><span style="font-size:13px;font-weight:700;color:var(--acc);min-width:20px;padding-top:4px">${n}.</span><textarea id="${p}_i${n}" rows="1" placeholder="…" oninput="autoResize(this);${a}" style="flex:1"></textarea></div>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">${inner}</div></div>`;
+  }
+  if(q.t==='gtbl'){
+    const rows=['長期目標（5年以上）','中期目標（1年〜5年）','短期目標（1年以内）'].map((r,i)=>`<tr><td class="rl">${r}</td><td><input type="text" id="${p}_g${i}" placeholder="目標内容" onchange="${a}" style="width:100%;border:none;padding:4px 7px;font-family:inherit;font-size:12px;background:transparent;outline:none"></td><td><input type="text" id="${p}_d${i}" placeholder="期日" onchange="${a}" style="width:100%;border:none;padding:4px 7px;font-family:inherit;font-size:12px;background:transparent;outline:none"></td><td><input type="text" id="${p}_m${i}" placeholder="指標" onchange="${a}" style="width:100%;border:none;padding:4px 7px;font-family:inherit;font-size:12px;background:transparent;outline:none"></td></tr>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body"><table class="tbl"><thead><tr><th style="width:28%">区分</th><th>目標</th><th style="width:18%">期日</th><th style="width:22%">定量指標</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  }
+  if(q.t==='5fg'){
+    const rows=['健康分野','人間関係分野','職業分野','経済分野','趣味・教養分野'].map((r,i)=>`<tr><td class="rl">${r}</td><td><input type="text" id="${p}_g${i}" placeholder="短期目標" onchange="${a}" style="width:100%;border:none;padding:4px 7px;font-family:inherit;font-size:12px;background:transparent;outline:none"></td><td><input type="text" id="${p}_d${i}" placeholder="期日" onchange="${a}" style="width:100%;border:none;padding:4px 7px;font-family:inherit;font-size:12px;background:transparent;outline:none"></td><td><input type="text" id="${p}_m${i}" placeholder="指標" onchange="${a}" style="width:100%;border:none;padding:4px 7px;font-family:inherit;font-size:12px;background:transparent;outline:none"></td><td><input type="text" id="${p}_l${i}" placeholder="レベル" onchange="${a}" style="width:100%;border:none;padding:4px 7px;font-family:inherit;font-size:12px;background:transparent;outline:none"></td></tr>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l||'5つの分野ごとに目標を設定しましょう。'}</div></div><div class="qb-body"><table class="tbl"><thead><tr><th style="width:22%">分野</th><th>短期目標</th><th style="width:14%">期日</th><th style="width:18%">指標（定量化）</th><th style="width:16%">レベル</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  }
+  if(q.t==='tl'||q.t==='tl2'){
+    const hours=['5:00','6:00','7:00','8:00','9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00','24:00','25:00','26:00'];
+    const rows=hours.map((h,i)=>`<tr><td class="t-lbl">${h}</td><td><input type="text" id="${p}_h${i}" placeholder="" onchange="${a}"></td></tr>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body"><table class="tl-tbl">${rows}</table></div></div>`;
+  }
+  if(q.t==='tcng'){
+    const rows=['なくす予定','減らす時間','変わらない予定'].map((r,i)=>`<tr><td class="rl">${r}</td><td><input type="text" id="${p}_a${i}" placeholder="具体的な使い方" onchange="${a}" style="width:100%;border:none;padding:4px 7px;font-family:inherit;font-size:12px;background:transparent;outline:none"></td><td><input type="text" id="${p}_b${i}" placeholder="理由・代わりに何をするか" onchange="${a}" style="width:100%;border:none;padding:4px 7px;font-family:inherit;font-size:12px;background:transparent;outline:none"></td></tr>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body"><table class="tbl"><thead><tr><th style="width:22%">区分</th><th>具体的な使い方</th><th>理由・代わりに何をするか</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  }
+  if(q.t==='hlt'){
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">
+<span class="sub-lbl">①私が健康に過ごせる時間</span>
+<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:4px 0"><input type="text" id="${p}_hs" placeholder="健康寿命" onchange="${a}" style="width:70px;border:1px solid var(--rule);border-radius:3px;padding:4px 6px;font-size:12px">歳 −<input type="text" id="${p}_ha" placeholder="今の年齢" onchange="${a}" style="width:70px;border:1px solid var(--rule);border-radius:3px;padding:4px 6px;font-size:12px">歳 =<input type="text" id="${p}_hr" placeholder="年数" onchange="${a}" style="width:55px;border:1px solid var(--rule);border-radius:3px;padding:4px 6px;font-size:12px">年 /<input type="text" id="${p}_hd" placeholder="日数" onchange="${a}" style="width:70px;border:1px solid var(--rule);border-radius:3px;padding:4px 6px;font-size:12px">日</div>
+<span class="sub-lbl">②私の残りの人生</span>
+<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:4px 0"><input type="text" id="${p}_ls" placeholder="平均寿命" onchange="${a}" style="width:70px;border:1px solid var(--rule);border-radius:3px;padding:4px 6px;font-size:12px">歳 −<input type="text" id="${p}_la" placeholder="今の年齢" onchange="${a}" style="width:70px;border:1px solid var(--rule);border-radius:3px;padding:4px 6px;font-size:12px">歳 =<input type="text" id="${p}_lr" placeholder="年数" onchange="${a}" style="width:55px;border:1px solid var(--rule);border-radius:3px;padding:4px 6px;font-size:12px">年 /<input type="text" id="${p}_ld" placeholder="日数" onchange="${a}" style="width:70px;border:1px solid var(--rule);border-radius:3px;padding:4px 6px;font-size:12px">日</div>
+</div></div>`;
+  }
+  if(q.t==='wkt'){
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:4px 0">退職希望年齢 <input type="text" id="${p}_ws" placeholder="歳" onchange="${a}" style="width:55px;border:1px solid var(--rule);border-radius:3px;padding:4px 6px;font-size:12px">歳 −<input type="text" id="${p}_wa" placeholder="今の年齢" onchange="${a}" style="width:70px;border:1px solid var(--rule);border-radius:3px;padding:4px 6px;font-size:12px">歳 =<input type="text" id="${p}_wr" placeholder="年数" onchange="${a}" style="width:60px;border:1px solid var(--rule);border-radius:3px;padding:4px 6px;font-size:12px">年（残りの仕事をする時間）</div></div></div>`;
+  }
+  if(q.t==='t20'){
+    const rows=[1,2,3,4,5].map(n=>`<tr><td><input type="text" id="${p}_n${n}" placeholder="名前" onchange="${a}" style="width:100%;border:none;padding:4px 7px;font-family:inherit;font-size:12px;background:transparent;outline:none"></td><td><input type="text" id="${p}_g${n}" placeholder="達成している目標" onchange="${a}" style="width:100%;border:none;padding:4px 7px;font-family:inherit;font-size:12px;background:transparent;outline:none"></td><td><input type="text" id="${p}_t${n}" placeholder="トップ20%の優先事項" onchange="${a}" style="width:100%;border:none;padding:4px 7px;font-family:inherit;font-size:12px;background:transparent;outline:none"></td></tr>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body"><table class="tbl"><thead><tr><th style="width:20%">名前</th><th>達成している目標</th><th>トップ20%の優先事項</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  }
+  if(q.t==='4q'){
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body"><div class="habit-grid">
+<div class="habit-cell"><div class="habit-cell-hdr">第1象限（緊急かつ重要）</div><textarea id="${p}_q1" rows="4" placeholder="5つの分野で書き出す…" oninput="autoResize(this);${a}" style="border-bottom:none;min-height:80px"></textarea></div>
+<div class="habit-cell"><div class="habit-cell-hdr">第2象限（緊急ではないが重要）</div><textarea id="${p}_q2" rows="4" placeholder="5つの分野で書き出す…" oninput="autoResize(this);${a}" style="border-bottom:none;min-height:80px"></textarea></div>
+<div class="habit-cell"><div class="habit-cell-hdr">第3象限（緊急だが重要ではない）</div><textarea id="${p}_q3" rows="4" placeholder="5つの分野で書き出す…" oninput="autoResize(this);${a}" style="border-bottom:none;min-height:80px"></textarea></div>
+<div class="habit-cell"><div class="habit-cell-hdr">第4象限（緊急でも重要でもない）</div><textarea id="${p}_q4" rows="4" placeholder="5つの分野で書き出す…" oninput="autoResize(this);${a}" style="border-bottom:none;min-height:80px"></textarea></div>
+</div></div></div>`;
+  }
+  if(q.t==='qw'){
+    const rows=['人','もの','状況','価値観','その他'].map((r,i)=>`<tr><td class="rl">${r}</td><td><textarea id="${p}_w${i}" rows="2" placeholder="…" oninput="autoResize(this);${a}" style="width:100%;border:none;padding:5px 8px;font-family:inherit;font-size:12px;background:transparent;outline:none;min-height:36px"></textarea></td></tr>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body"><table class="tbl"><thead><tr><th style="width:18%">分類</th><th>上質世界に入っているもの</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  }
+  if(q.t==='ctlck'){
+    const boxes=q.items.map((it,i)=>`<label class="ci"><input type="checkbox" id="${p}_c${i}" onchange="${a}"><label for="${p}_c${i}">${it}</label></label>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body"><div class="cb-grid">${boxes}</div></div></div>`;
+  }
+  if(q.t==='sc'){
+    const inner=['①私は何を求めているのか？（私にとって一番大切なものは何か？私が本当に求めているものは？願望の明確化）','②そのために「今」何をしているのか？（時間とお金の使い方をチェックする）','③その行動は私の求めているものを手に入れるのに効果的か？（主観を絶対視せず、客観的に行動を自己評価する）','④もっと良い方法を考え出して実行してみよう（改善計画とその実践）'].map((l,i)=>`<span class="sub-lbl">${l}</span><textarea id="${p}_s${i}" rows="2" placeholder="…" oninput="autoResize(this);${a}"></textarea>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">${inner}</div></div>`;
+  }
+  if(q.t==='coth'){
+    const inner=['配偶者・パートナー','職場の仲間','お客様'].map((lbl,i)=>`<div class="pg"><div class="pg-ttl">【${lbl}】 <input class="ni" id="${p}_on${i}" placeholder="名前（さん）" oninput="${a}" style="display:inline;width:120px;font-weight:normal;font-size:12px"></div>${['①求めているもの','②今私がしていること','③行動は効果的か','④もっとよい方法'].map((sl,j)=>`<span class="sub-lbl">${sl}</span><textarea id="${p}_o${i}_${j}" rows="1" placeholder="…" oninput="autoResize(this);${a}"></textarea>`).join('')}</div>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">${inner}</div></div>`;
+  }
+  if(q.t==='sc5'){
+    const rows=q.items.map((it,i)=>`<tr><td class="rl" style="font-size:11px">${it}</td>${['非常にそう思う','そう思う','どちらでもない','あまり思わない','全くそう思わない'].map((lbl,j)=>`<td style="text-align:center;padding:4px"><input type="radio" name="${p}_r${i}" value="${j}" onchange="${a}"></td>`).join('')}</tr>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body" style="overflow-x:auto"><table class="tbl" style="min-width:500px"><thead><tr><th style="width:38%">質問</th><th style="font-size:10px">非常にそう思う</th><th style="font-size:10px">そう思う</th><th style="font-size:10px">どちらでも</th><th style="font-size:10px">あまり思わない</th><th style="font-size:10px">全くそう思わない</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  }
+  if(q.t==='ids'){
+    const inner=['持ち物・服装・・・','ポジション・役割・・・','得ている収入・・・','ライフスタイル・・・','使っている言葉・・・','付き合っている人・・・','成し遂げていること・・・'].map((l,i)=>`<span class="sub-lbl">${l}</span><textarea id="${p}_v${i}" rows="1" placeholder="…" oninput="autoResize(this);${a}"></textarea>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">${inner}</div></div>`;
+  }
+  if(q.t==='lvh'){
+    const inner=['幼少期','学生時代','社会に出てから'].map((l,i)=>`<span class="sub-lbl">${l}</span><textarea id="${p}_l${i}" rows="3" placeholder="…" oninput="autoResize(this);${a}"></textarea>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">${inner}</div></div>`;
+  }
+  if(q.t==='em6'){
+    const inner=q.items.map((it,i)=>`<div class="pg" style="margin-bottom:6px"><div class="pg-ttl" style="font-size:12px">${it}</div><textarea id="${p}_e${i}" rows="2" placeholder="何を考え、どのような感情になるか…" oninput="autoResize(this);${a}"></textarea></div>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">${inner}</div></div>`;
+  }
+  if(q.t==='s3h'){
+    const inner=[1,2,3].map(n=>`<div class="pg"><input class="ni" id="${p}_n${n}" placeholder="名前（さん）" oninput="${a}"><span class="sub-lbl">よい習慣</span><textarea id="${p}_h${n}" rows="3" placeholder="…" oninput="autoResize(this);${a}"></textarea></div>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">${inner}</div></div>`;
+  }
+  if(q.t==='h4g'){
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body"><div class="habit-grid">
+<div class="habit-cell"><div class="habit-cell-hdr">ビジネス × よい習慣</div><textarea id="${p}_bg" rows="4" placeholder="…" oninput="autoResize(this);${a}" style="border-bottom:none;min-height:70px"></textarea></div>
+<div class="habit-cell"><div class="habit-cell-hdr">プライベート × よい習慣</div><textarea id="${p}_pg" rows="4" placeholder="…" oninput="autoResize(this);${a}" style="border-bottom:none;min-height:70px"></textarea></div>
+<div class="habit-cell"><div class="habit-cell-hdr">ビジネス × 悪い習慣</div><textarea id="${p}_bb" rows="4" placeholder="…" oninput="autoResize(this);${a}" style="border-bottom:none;min-height:70px"></textarea></div>
+<div class="habit-cell"><div class="habit-cell-hdr">プライベート × 悪い習慣</div><textarea id="${p}_pb" rows="4" placeholder="…" oninput="autoResize(this);${a}" style="border-bottom:none;min-height:70px"></textarea></div>
+</div></div></div>`;
+  }
+  if(q.t==='mng'){
+    const rows=[['就寝時間','ws'],['睡眠時間','sl'],['起床時間','wk'],['身支度（時間帯）','sd'],['考える時間（時間帯）','tk']].map(([l,k])=>`<tr><td class="rl">${l}</td><td><input type="text" id="${p}_${k}" placeholder="" onchange="${a}" style="width:100%;border:none;padding:5px 8px;font-family:inherit;font-size:12px;background:transparent;outline:none"></td></tr>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body"><table class="tbl"><thead><tr><th style="width:38%">項目</th><th>時間</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  }
+  if(q.t==='pp3n'){
+    const inner=[1,2,3].map(n=>`<div class="pg"><input class="ni" id="${p}_n${n}" placeholder="パワーパートナーとしたい人の名前" oninput="${a}"><span class="sub-lbl">力を借りたいこと</span><textarea id="${p}_h${n}" rows="1" placeholder="…" oninput="autoResize(this);${a}"></textarea><span class="sub-lbl">共通の目的目標</span><textarea id="${p}_g${n}" rows="1" placeholder="…" oninput="autoResize(this);${a}"></textarea></div>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">${inner}</div></div>`;
+  }
+  if(q.t==='pp3pl'){
+    const inner=[1,2,3].map(n=>`<div class="pg"><span class="sub-lbl">誰に</span><input class="ni" id="${p}_who${n}" placeholder="…" oninput="${a}"><span class="sub-lbl">いつ</span><input class="ni" id="${p}_when${n}" placeholder="…" oninput="${a}"><span class="sub-lbl">どのようにして</span><textarea id="${p}_how${n}" rows="2" placeholder="…" oninput="autoResize(this);${a}"></textarea></div>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">${inner}</div></div>`;
+  }
+  if(q.t==='pp4r'){
+    const inner=[1,2,3,4].map(n=>`<div class="pg"><input class="ni" id="${p}_n${n}" placeholder="パワーパートナーの名前" oninput="${a}"><span class="sub-lbl">求めているもの</span><textarea id="${p}_r${n}" rows="1" placeholder="…" oninput="autoResize(this);${a}"></textarea><span class="sub-lbl">関係性</span><textarea id="${p}_rel${n}" rows="1" placeholder="…" oninput="autoResize(this);${a}"></textarea></div>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">${inner}</div></div>`;
+  }
+  if(q.t==='pp4g'){
+    const inner=[1,2,3,4].map(n=>`<div class="pg"><input class="ni" id="${p}_n${n}" placeholder="パワーパートナーの名前" oninput="${a}"><span class="sub-lbl">私がすること</span><textarea id="${p}_do${n}" rows="2" placeholder="…" oninput="autoResize(this);${a}"></textarea></div>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">${inner}</div></div>`;
+  }
+  if(q.t==='ld3'){
+    const inner=[1,2,3].map(n=>`<div class="pg"><input class="ni" id="${p}_n${n}" placeholder="名前（さん）" oninput="${a}"><span class="sub-lbl">リーダーシップの発揮につながっている考え方・行動</span><textarea id="${p}_l${n}" rows="3" placeholder="…" oninput="autoResize(this);${a}"></textarea></div>`).join('');
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">${inner}</div></div>`;
+  }
+  if(q.t==='yoku'){
+    return `<div class="qb"><div class="qh"><div class="qt">${q.l}</div></div><div class="qb-body">
+<div style="display:flex;align-items:center;gap:6px;margin:5px 0;flex-wrap:wrap"><span style="font-size:10px;color:var(--ink-l)">${q.min}</span>
+<input type="number" class="score-inp" id="${p}_sc" min="1" max="6" placeholder="4" oninput="${a}" style="width:52px">
+<span style="font-size:10px;color:var(--ink-l)">${q.max}（1〜6）</span></div>
+<span class="sub-lbl">その点数をつけた理由</span><textarea id="${p}_r" rows="2" placeholder="…" oninput="autoResize(this);${a}"></textarea>
+<span class="sub-lbl">${q.vl}</span><textarea id="${p}_v" rows="2" placeholder="…" oninput="autoResize(this);${a}"></textarea>
+</div></div>`;
+  }
+  // fallback
+  return `<div class="qb"><div class="qh"><div class="qt">${q.l||''}</div></div><div class="qb-body"><textarea id="${p}" rows="3" placeholder="…" oninput="autoResize(this);${a}"></textarea></div></div>`;
+}
+// ===== NAVIGATION =====
+function activateStep(si){
+  cs=si;
+  document.querySelectorAll('.step-tab').forEach((t,i)=>t.classList.toggle('active',i===si));
+  document.getElementById('histTab').classList.remove('active');
+  document.querySelectorAll('.step-panel').forEach((p,i)=>p.classList.toggle('active',i===si));
+  document.getElementById('historyPanel').style.display='none';
+  buildDayTabs(si);activateDay(si,0);
+}
+function buildDayTabs(si){
+  const dt=document.getElementById('dayTabs');dt.innerHTML='';
+  STEPS[si].days.forEach((day,di)=>{
+    const d=document.createElement('div');
+    d.className='day-tab'+(di===0?' active':'');d.textContent=day.label;
+    d.id=`dt_${si}_${di}`;d.onclick=()=>activateDay(si,di);dt.appendChild(d);
+  });
+}
+function activateDay(si,di){
+  cd=di;const k=rk(si,di);
+  if(!rounds[k])rounds[k]=1;
+  if(!rmax[k])rmax[k]=parseInt(localStorage.getItem(`mp3_rmax_${k}`)||'1');
+  document.querySelectorAll(`[id^="dt_${si}_"]`).forEach((t,i)=>t.classList.toggle('active',i===di));
+  document.querySelectorAll(`#sp_${si} .day-panel`).forEach((p,i)=>p.classList.toggle('active',i===di));
+  renderRounds(si,di);loadData(si,di,rounds[k]);setTimeout(autoResizeAll,50);
+}
+function renderRounds(si,di){
+  const k=rk(si,di);const rr=document.getElementById(`rr_${k}`);if(!rr)return;
+  const cur=rounds[k]||1,mx=rmax[k]||1;
+  rr.querySelectorAll('.round-btn').forEach(b=>b.remove());
+  const add=rr.querySelector('.add-round');
+  for(let i=1;i<=mx;i++){const btn=document.createElement('button');btn.className='round-btn'+(i===cur?' active':'');btn.textContent=i;btn.onclick=((n)=>()=>switchRound(si,di,n))(i);rr.insertBefore(btn,add);}
+}
+function switchRound(si,di,r){saveData(si,di);const k=rk(si,di);rounds[k]=r;renderRounds(si,di);loadData(si,di,r);setTimeout(autoResizeAll,50);}
+function addRound(si,di){saveData(si,di);const k=rk(si,di);rmax[k]=(rmax[k]||1)+1;localStorage.setItem(`mp3_rmax_${k}`,rmax[k]);rounds[k]=rmax[k];renderRounds(si,di);loadData(si,di,rounds[k]);setTimeout(autoResizeAll,50);}
+
+// ===== DATA =====
+function collectData(si,di){
+  const k=rk(si,di),r=rounds[k]||1,pfx=`${k}_r${r}_`;
+  const data={};
+  document.querySelectorAll(`[id^="${pfx}"]`).forEach(el=>{
+    if(el.type==='checkbox')data[el.id]=el.checked;
+    else if(el.type==='radio'){if(el.checked)data[el.name]=el.value;}
+    else if(el.id)data[el.id]=el.value;
+  });
+  return data;
+}
+function saveData(si,di){
+  const k=rk(si,di),r=rounds[k]||1;
+  const data=collectData(si,di);data._ts=new Date().toISOString();
+  localStorage.setItem(dkey(si,di,r),JSON.stringify(data));
+}
+function loadData(si,di,r){
+  const k=rk(si,di),pfx=`${k}_r${r}_`;
+  document.querySelectorAll(`[id^="${pfx}"]`).forEach(el=>{if(el.type==='checkbox')el.checked=false;else if(el.type!=='radio')el.value='';});
+  const raw=localStorage.getItem(dkey(si,di,r));if(!raw)return;
+  const data=JSON.parse(raw);
+  Object.entries(data).forEach(([k2,v])=>{
+    if(k2==='_ts')return;
+    const el=document.getElementById(k2);
+    if(el){if(el.type==='checkbox')el.checked=!!v;else el.value=v||'';}
+    else{const rds=document.querySelectorAll(`[name="${k2}"]`);rds.forEach(r2=>{if(r2.value==v)r2.checked=true;});}
+  });
+}
+let saveTimer=null;
+function autoSave(si,di){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{
+    saveData(si!==undefined?si:cs,di!==undefined?di:cd);
+    const s=document.getElementById('saveSt');s.textContent='✓ 保存済み';s.classList.add('show');
+    setTimeout(()=>s.classList.remove('show'),1800);
+  },600);
+}
+
+// ===== COPY =====
+function copyData(){
+  saveData(cs,cd);
+  const k=rk(cs,cd),r=rounds[k]||1;
+  const step=STEPS[cs],day=step.days[cd];
+  const now=new Date();const ds=`${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`;
+  let lines=[`【${step.label} ${step.title} - ${day.badge} | 周回${r} | ${ds}】`,`テーマ：${day.theme}`,''];
+  const panel=document.getElementById(`dp_${cs}_${cd}`);
+  panel.querySelectorAll('.qb').forEach(qb=>{
+    const qt=qb.querySelector('.qt');
+    if(qt)lines.push(`■ ${qt.textContent.trim().replace(/\s+/g,' ')}`);
+    qb.querySelectorAll('textarea,[type="text"],[type="number"]').forEach(el=>{
+      if(el.value.trim()){
+        const lbl=el.previousElementSibling;
+        if(lbl&&lbl.classList&&lbl.classList.contains('sub-lbl'))lines.push(`  ${lbl.textContent.replace(/：$/,'')}：${el.value.trim()}`);
+        else lines.push(`  ${el.value.trim()}`);
+      }
+    });
+    const cks=[];
+    qb.querySelectorAll('input[type="checkbox"]:checked').forEach(el=>{const lb=el.parentElement.querySelector('label');if(lb)cks.push(lb.textContent.trim());});
+    if(cks.length)lines.push(`  チェック：${cks.join('、')}`);
+    lines.push('');
+  });
+  const pl=panel.querySelector('[id$="pledge"]');
+  if(pl&&pl.value.trim()){lines.push('【実践への誓い】');lines.push(pl.value.trim());}
+  const text=lines.join('\n');
+  navigator.clipboard.writeText(text).then(()=>{saveHist(cs,cd,r,ds);showToast('📋 コピー完了！スプレッドシートに貼り付けてください');updateHist();}).catch(()=>{const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);saveHist(cs,cd,r,ds);showToast('📋 コピー完了！スプレッドシートに貼り付けてください');updateHist();});
+}
+function saveHist(si,di,r,ds){
+  const hist=JSON.parse(localStorage.getItem('mp3_history')||'[]');
+  const data=collectData(si,di);
+  hist.unshift({si,di,r,ds,data,ts:Date.now()});
+  if(hist.length>100)hist.pop();
+  localStorage.setItem('mp3_history',JSON.stringify(hist));
+}
+
+// ===== HISTORY =====
+function showHistory(){
+  document.querySelectorAll('.step-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('histTab').classList.add('active');
+  document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('historyPanel').style.display='block';
+  document.getElementById('dayTabs').innerHTML='';
+  updateHist();
+}
+function updateHist(){
+  const hp=document.getElementById('historyPanel');if(!hp||hp.style.display==='none')return;
+  const hist=JSON.parse(localStorage.getItem('mp3_history')||'[]');
+  if(!hist.length){hp.innerHTML='<div class="hist-empty">まだ履歴がありません。<br>各Dayで回答してコピーしてください。</div>';return;}
+  hp.innerHTML='<div style="padding:12px 0 4px;font-size:12px;color:var(--ink-l);font-weight:600">コピー履歴（最新100件）</div>'+
+  hist.map((h,i)=>{
+    const step=STEPS[h.si];const day=step?step.days[h.di]:null;
+    const ttl=day?`${step.label} - ${day.label} / 周回${h.r}`:`記録 ${i+1}`;
+    const items=Object.entries(h.data||{}).filter(([k,v])=>k!=='_ts'&&v&&typeof v==='string'&&v.trim()).slice(0,3).map(([,v])=>`<div class="hi">${v.trim().substring(0,100)}${v.length>100?'…':''}</div>`).join('');
+    return `<div class="hc"><div class="hc-hdr" onclick="toggleHist(${i})"><div class="hc-ttl">${ttl}</div><div class="hc-meta">${h.ds}</div></div><div class="hc-body" id="hb_${i}">${items||'<div style="color:var(--rule);font-size:12px">（チェックのみ）</div>'}</div></div>`;
+  }).join('');
+}
+function toggleHist(i){const b=document.getElementById(`hb_${i}`);b.classList.toggle('open');}
+
+// ===== HELPERS =====
+function clearDay(){if(!confirm('このDayの現在の周回の回答をクリアしますか？'))return;const k=rk(cs,cd),r=rounds[k]||1,pfx=`${k}_r${r}_`;document.querySelectorAll(`[id^="${pfx}"]`).forEach(el=>{if(el.type==='checkbox')el.checked=false;else if(el.type!=='radio')el.value='';});localStorage.removeItem(dkey(cs,cd,r));showToast('クリアしました');}
+function autoResize(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';}
+function autoResizeAll(){document.querySelectorAll('textarea').forEach(autoResize);}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+
+window.addEventListener('load',buildAll);
+</script>
+</body>
+</html>
