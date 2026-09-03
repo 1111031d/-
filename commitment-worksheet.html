@@ -1,0 +1,743 @@
+<title>本気度の純度ノート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&display=swap">
+<style>
+:root{
+  --paper:#faf8f3; --warm:#f5f1e8; --sunk:#efe9dc;
+  --ink:#1a1208; --ink-l:#5b4f3c; --ink-x:#877a64;
+  --rule:#d9cfb8; --rule-s:#e8e0cd;
+  --acc:#8b3a1a; --acc-l:#a85731;
+  --gold:#9c7d18; --gold-bg:#f3ead0;
+  --nav:#2c4a5e; --nav-bg:#e5edf2;
+  --field:#fffdf8; --field-line:#cfc4aa;
+  --shadow:rgba(26,18,8,.10);
+  --ok:#2f6b45;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#16110b; --warm:#1e1811; --sunk:#241d14;
+    --ink:#f2ebdd; --ink-l:#c6baa4; --ink-x:#968a73;
+    --rule:#3f3527; --rule-s:#2c251a;
+    --acc:#e28457; --acc-l:#eda87d;
+    --gold:#d9b64a; --gold-bg:#332a12;
+    --nav:#93bad1; --nav-bg:#1b2831;
+    --field:#1c160e; --field-line:#4c4231;
+    --shadow:rgba(0,0,0,.45);
+    --ok:#79bb92;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#16110b; --warm:#1e1811; --sunk:#241d14;
+  --ink:#f2ebdd; --ink-l:#c6baa4; --ink-x:#968a73;
+  --rule:#3f3527; --rule-s:#2c251a;
+  --acc:#e28457; --acc-l:#eda87d;
+  --gold:#d9b64a; --gold-bg:#332a12;
+  --nav:#93bad1; --nav-bg:#1b2831;
+  --field:#1c160e; --field-line:#4c4231;
+  --shadow:rgba(0,0,0,.45);
+  --ok:#79bb92;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Noto Sans JP','Yu Gothic',sans-serif;
+  background:var(--paper); color:var(--ink);
+  font-size:15px; line-height:1.85; -webkit-text-size-adjust:100%;
+}
+.mincho{font-family:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',serif;}
+
+/* ---------- 上部バー ---------- */
+.bar{
+  position:sticky; top:0; z-index:50;
+  background:var(--warm); border-bottom:1px solid var(--rule);
+  box-shadow:0 1px 8px var(--shadow);
+}
+.bar-in{max-width:860px; margin:0 auto; padding:10px 18px 0;
+  display:flex; flex-direction:column; gap:8px}
+.bar-top{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap}
+.bar-name{font-size:13px; font-weight:700; letter-spacing:.06em}
+.bar-goal{font-size:11.5px; color:var(--ink-x); letter-spacing:.02em;
+  font-variant-numeric:tabular-nums}
+.bar-tools{margin-left:auto; display:flex; gap:6px}
+.tool{
+  font:inherit; font-size:11.5px; font-weight:600; letter-spacing:.03em;
+  color:var(--ink-l); background:var(--field); border:1px solid var(--field-line);
+  border-radius:3px; padding:4px 10px; cursor:pointer;
+}
+.tool:hover{border-color:var(--acc); color:var(--acc)}
+.tool:focus-visible{outline:2px solid var(--acc); outline-offset:2px}
+.meter{display:flex; align-items:center; gap:10px; padding-bottom:8px}
+.meter-track{flex:1; height:4px; background:var(--sunk); border-radius:2px; overflow:hidden}
+.meter-fill{height:100%; width:0%; background:var(--acc); transition:width .35s ease}
+.meter-num{font-size:11px; color:var(--ink-x); font-variant-numeric:tabular-nums;
+  letter-spacing:.04em; white-space:nowrap}
+.chips{display:flex; gap:2px; overflow-x:auto; scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  font-size:11.5px; font-weight:600; letter-spacing:.04em; white-space:nowrap;
+  color:var(--ink-x); text-decoration:none; padding:6px 10px 8px;
+  border-bottom:2px solid transparent;
+}
+.chip:hover,.chip:focus-visible{color:var(--acc); border-bottom-color:var(--rule)}
+.chip b{color:var(--ink-x); font-weight:700; margin-right:5px;
+  font-variant-numeric:tabular-nums}
+
+/* ---------- 本文 ---------- */
+main{max-width:860px; margin:0 auto; padding:0 18px 120px}
+
+.hero{padding:44px 0 34px; border-bottom:1px solid var(--rule)}
+.hero-eyebrow{font-size:11px; letter-spacing:.22em; color:var(--acc);
+  font-weight:700; margin-bottom:14px}
+.hero h1{font-size:clamp(27px,6vw,40px); line-height:1.45; font-weight:700;
+  text-wrap:balance; letter-spacing:.01em}
+.hero h1 em{font-style:normal; color:var(--acc)}
+.hero p{margin-top:18px; max-width:34em; color:var(--ink-l); font-size:14.5px}
+.hero-note{margin-top:22px; font-size:12.5px; color:var(--ink-x);
+  border-left:2px solid var(--rule); padding-left:12px; max-width:34em}
+
+section{padding:44px 0; border-bottom:1px solid var(--rule-s)}
+.sec-head{display:flex; gap:16px; align-items:flex-start; margin-bottom:8px}
+.sec-num{font-family:'Shippori Mincho',serif; font-size:34px; line-height:1;
+  color:var(--acc); font-weight:500; flex-shrink:0; font-variant-numeric:tabular-nums;
+  padding-top:2px}
+.sec-title{font-size:21px; font-weight:700; line-height:1.5; letter-spacing:.02em}
+.sec-sub{font-size:12.5px; color:var(--ink-x); letter-spacing:.06em;
+  font-weight:600; margin-top:3px}
+.sec-lead{color:var(--ink-l); font-size:14px; max-width:40em; margin:14px 0 26px 50px}
+
+@media (max-width:600px){
+  .sec-num{font-size:26px}
+  .sec-lead{margin-left:0}
+}
+
+/* ---------- 設問 ---------- */
+.q{margin-bottom:26px}
+.q-label{display:block; font-size:15px; font-weight:700; line-height:1.7;
+  margin-bottom:5px; text-wrap:pretty}
+.q-hint{font-size:12.5px; color:var(--ink-x); line-height:1.7; margin-bottom:8px;
+  max-width:44em}
+textarea,input[type="text"]{
+  font:inherit; font-size:14.5px; line-height:1.8; color:var(--ink);
+  background:var(--field); border:1px solid var(--field-line); border-radius:3px;
+  width:100%; padding:11px 13px; resize:vertical;
+}
+textarea{min-height:88px}
+textarea:focus,input:focus{outline:2px solid var(--acc-l); outline-offset:1px;
+  border-color:var(--acc-l)}
+textarea::placeholder,input::placeholder{color:var(--ink-x); opacity:.6}
+
+.q-oneline textarea{min-height:52px}
+.q-deep{background:var(--gold-bg); border-left:3px solid var(--gold);
+  padding:20px 20px 22px; border-radius:0 4px 4px 0}
+.q-deep .q-label{color:var(--ink)}
+.q-deep-tag{font-size:10.5px; font-weight:700; letter-spacing:.14em;
+  color:var(--gold); margin-bottom:8px}
+
+/* ---------- 数字ブロック ---------- */
+.calc{background:var(--nav-bg); border:1px solid var(--rule); border-radius:4px;
+  padding:20px 18px; margin-bottom:24px}
+.calc-title{font-size:12px; font-weight:700; letter-spacing:.12em; color:var(--nav);
+  margin-bottom:14px}
+.assump{display:flex; flex-wrap:wrap; gap:10px 22px; margin-bottom:18px;
+  padding-bottom:16px; border-bottom:1px dashed var(--rule)}
+.assump label{font-size:12.5px; color:var(--ink-l); display:flex; align-items:center; gap:7px}
+.assump input{width:88px; padding:5px 8px; font-size:13.5px; text-align:right;
+  font-variant-numeric:tabular-nums}
+
+.tw{overflow-x:auto; -webkit-overflow-scrolling:touch}
+table{border-collapse:collapse; width:100%; min-width:600px;
+  font-variant-numeric:tabular-nums}
+th,td{padding:8px 9px; text-align:right; font-size:13px;
+  border-bottom:1px solid var(--rule-s)}
+th{font-size:11px; font-weight:700; letter-spacing:.04em; color:var(--ink-x);
+  border-bottom:1px solid var(--rule); white-space:nowrap; vertical-align:bottom}
+th:first-child,td:first-child{text-align:left; white-space:nowrap; font-weight:700}
+td input{width:74px; padding:5px 7px; font-size:13.5px; text-align:right;
+  font-variant-numeric:tabular-nums}
+td.derived{color:var(--nav); font-weight:600}
+tr.goal-row td{background:var(--gold-bg); font-weight:700}
+tr.goal-row td.derived{color:var(--ink)}
+.t-unit{font-weight:400; color:var(--ink-x); font-size:10px; display:block}
+.calc-note{font-size:12px; color:var(--ink-x); margin-top:12px; line-height:1.75}
+
+.sum{display:flex; align-items:baseline; justify-content:space-between; gap:12px;
+  margin-top:16px; padding-top:14px; border-top:1px solid var(--rule)}
+.sum-label{font-size:12.5px; font-weight:700; color:var(--ink-l)}
+.sum-val{font-family:'Shippori Mincho',serif; font-size:26px; font-weight:700;
+  font-variant-numeric:tabular-nums; color:var(--nav)}
+.sum-gap{font-size:12.5px; color:var(--ink-x); font-variant-numeric:tabular-nums}
+.sum-gap.done{color:var(--ok); font-weight:700}
+
+/* ---------- 棚卸しリスト ---------- */
+.split{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+@media (max-width:600px){.split{grid-template-columns:1fr}}
+.split-h{font-size:11px; font-weight:700; letter-spacing:.1em; color:var(--ink-x);
+  margin-bottom:5px}
+
+/* ---------- 週チェック表 ---------- */
+.week{width:100%; min-width:440px; border-collapse:collapse}
+.week th,.week td{border:1px solid var(--rule-s); text-align:center; padding:0}
+.week th{padding:6px 4px; font-size:11px; background:var(--sunk)}
+.week th.week-item{text-align:left; padding-left:10px; min-width:190px}
+.week td.week-item{text-align:left; padding:0}
+.week td.week-item input{border:0; background:transparent; border-radius:0;
+  padding:9px 10px; font-size:13.5px}
+.week td.week-item input:focus{outline:2px solid var(--acc-l); outline-offset:-2px}
+.week label{display:block; padding:9px 0; cursor:pointer}
+.week input[type="checkbox"]{width:16px; height:16px; accent-color:var(--acc);
+  cursor:pointer; vertical-align:middle}
+.week label:hover{background:var(--sunk)}
+
+.vow{background:var(--warm); border:1px solid var(--rule); border-radius:4px;
+  padding:22px; margin-bottom:24px}
+.vow textarea{font-family:'Shippori Mincho','Hiragino Mincho ProN',serif;
+  font-size:17px; line-height:2; min-height:100px; background:var(--field)}
+
+.closing{padding:40px 0 0; text-align:center}
+.closing p{font-size:13px; color:var(--ink-x); max-width:32em; margin:0 auto}
+.saved{font-size:11.5px; color:var(--ok); font-weight:600; min-height:1.5em;
+  text-align:center; margin-top:14px}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important; scroll-behavior:auto !important}
+}
+html{scroll-behavior:smooth; scroll-padding-top:110px}
+
+@media print{
+  .bar{display:none}
+  body{background:#fff; color:#000; font-size:11pt}
+  section{break-inside:auto; border-bottom:1px solid #ccc}
+  textarea,input{border:1px solid #999; background:#fff}
+}
+</style>
+
+<div class="bar">
+  <div class="bar-in">
+    <div class="bar-top">
+      <div class="bar-name">本気度の純度ノート</div>
+      <div class="bar-goal">2030年度 ｜ 売上 1億円・個人資産 1億円</div>
+      <div class="bar-tools">
+        <button class="tool" id="copyBtn" type="button">全文コピー</button>
+        <button class="tool" id="clearBtn" type="button">全消去</button>
+      </div>
+    </div>
+    <div class="meter">
+      <div class="meter-track"><div class="meter-fill" id="meterFill"></div></div>
+      <div class="meter-num" id="meterNum">記入 0 / 0</div>
+    </div>
+    <nav class="chips">
+      <a class="chip" href="#s1"><b>01</b>理念</a>
+      <a class="chip" href="#s2"><b>02</b>ビジョン</a>
+      <a class="chip" href="#s3"><b>03</b>逆算</a>
+      <a class="chip" href="#s4"><b>04</b>濁り</a>
+      <a class="chip" href="#s5"><b>05</b>習慣</a>
+    </nav>
+  </div>
+</div>
+
+<main>
+
+<div class="hero">
+  <div class="hero-eyebrow">2026 → 2030 ／ 訪問看護</div>
+  <h1 class="mincho">本気度は、強く思うことでは上がらない。<br><em>書き切る</em>ことで純度が上がる。</h1>
+  <p>「1億円」という数字は、そのままでは決意になりません。理念に接続され、五感で描ける状態になり、年次の数字に翻訳され、日々の行動に落ちたときにはじめて、迷いのない一本の線になります。上から順に埋めてください。</p>
+  <div class="hero-note">入力は自動でこの端末に保存されます（サーバーには送られません）。途中でページを閉じても、次に開いたとき続きから書けます。</div>
+</div>
+
+<!-- ============ 01 理念 ============ -->
+<section id="s1">
+  <div class="sec-head">
+    <div class="sec-num">01</div>
+    <div>
+      <div class="sec-title">理念 ── なぜ、自分がこれをやるのか</div>
+      <div class="sec-sub">目的が濁っていると、手段の数字は必ずブレる</div>
+    </div>
+  </div>
+  <p class="sec-lead">1億円は「手段」です。手段が目的化すると、条件の悪い依頼を断れなくなり、採用も焦り、判断が短期に寄ります。まず、その上にある目的を自分の言葉で確定させます。</p>
+
+  <div class="q">
+    <label class="q-label" for="q101">あなたが訪問看護でしか果たせないと思っていることは何ですか。</label>
+    <div class="q-hint">「地域貢献」「利用者のため」のような、誰が書いても同じになる言葉は使わないでください。あなたが実際に見た場面、悔しかった場面から書きます。</div>
+    <textarea id="q101" placeholder="例：退院調整が間に合わず、本人が望んでいない形で施設に移った方がいた。あの判断の分かれ目に、24時間動ける看護の手があるかどうかで結果が変わることを、自分は現場で知っている。"></textarea>
+  </div>
+
+  <div class="q">
+    <label class="q-label" for="q102">2030年度に売上1億円になったとき、「誰の」「どんな状態」が変わっていますか。</label>
+    <div class="q-hint">利用者・その家族・スタッフ・地域のケアマネや医療機関・自分の家族。それぞれ一行ずつ、具体的に。</div>
+    <textarea id="q102" placeholder="利用者：&#10;家族：&#10;スタッフ：&#10;地域（ケアマネ・病院・医師）：&#10;自分の家族："></textarea>
+  </div>
+
+  <div class="q">
+    <label class="q-label" for="q103">その1億円を、あなたは何に使いますか。</label>
+    <div class="q-hint">売上・資産は「入れ物」です。中身の使い道が決まっていない目標は、達成が近づくほど動機が落ちます。事業への再投資、スタッフの処遇、家族、自分の学び ── 配分まで書いてください。</div>
+    <textarea id="q103"></textarea>
+  </div>
+
+  <div class="q q-deep">
+    <div class="q-deep-tag">純度テスト</div>
+    <label class="q-label" for="q104">もし2030年度に1億円に届かないと今わかったとしても、あなたはこの事業を続けますか。「はい／いいえ」と、その理由を書いてください。</label>
+    <div class="q-hint">「はい」なら、あなたの動機は数字の外側にあります。それがブレない核です。「いいえ」なら、いま追っているのは事業ではなく数字です。どちらが悪いということではなく、どちらなのかを自分で知っていることが純度です。</div>
+    <textarea id="q104" placeholder="はい／いいえ ──"></textarea>
+  </div>
+
+  <div class="q q-oneline">
+    <label class="q-label" for="q105">ここまでを踏まえて、あなたの理念を「一文」にしてください。</label>
+    <div class="q-hint">本やセミナーで聞いた言葉を一切使わず、自分の語彙だけで。声に出して違和感がなくなるまで書き直します。</div>
+    <textarea id="q105"></textarea>
+  </div>
+</section>
+
+<!-- ============ 02 ビジョン ============ -->
+<section id="s2">
+  <div class="sec-head">
+    <div class="sec-num">02</div>
+    <div>
+      <div class="sec-title">ビジョン ── 2031年3月31日を、細部まで描く</div>
+      <div class="sec-sub">抽象的な目標は行動を生まない。映像だけが人を動かす</div>
+    </div>
+  </div>
+  <p class="sec-lead">2030年度の最終日を、記憶を思い出すように書きます。時制は過去形か現在形で。「なりたい」ではなく「なっている」で書くと、脳は差分を埋めにいきます。</p>
+
+  <div class="q">
+    <label class="q-label" for="q201">その日の朝起きてから夜寝るまでを、時間の流れで書いてください。</label>
+    <div class="q-hint">何時に起きて、どこにいて、誰と会い、何を決めているか。移動時間、着ているもの、聞こえてくる音まで。</div>
+    <textarea id="q201" style="min-height:150px" placeholder="6:30 ──&#10;9:00 ──&#10;13:00 ──&#10;18:00 ──&#10;21:00 ──"></textarea>
+  </div>
+
+  <div class="q">
+    <label class="q-label" for="q202">その日、スタッフはあなたのことを何と言っていますか。</label>
+    <div class="q-hint">本人がいない場所での会話として。ここが空欄になるなら、組織づくりの設計がまだ言語化されていません。</div>
+    <textarea id="q202"></textarea>
+  </div>
+
+  <div class="q">
+    <label class="q-label" for="q203">決算書を開いています。数字は何と書かれていますか。</label>
+    <div class="q-hint">売上高／営業利益／人件費率／現預金残高。訪問看護は人件費率70〜75%が一般的な水準で、営業利益率は概ね5〜15%です。自分の目標値を入れてください。</div>
+    <textarea id="q203" placeholder="売上高：　　　　万円&#10;営業利益：　　　万円（利益率　　%）&#10;人件費率：　　　%&#10;現預金残高：　　万円"></textarea>
+  </div>
+
+  <div class="q">
+    <label class="q-label" for="q204">利用者数・スタッフ数・拠点数は、何になっていますか。</label>
+    <textarea id="q204" class="q-oneline" placeholder="拠点：　　カ所　／　常勤換算：　　名　／　月間実利用者：　　名　／　月間訪問件数：　　件"></textarea>
+  </div>
+</section>
+
+<!-- ============ 03 逆算 ============ -->
+<section id="s3">
+  <div class="sec-head">
+    <div class="sec-num">03</div>
+    <div>
+      <div class="sec-title">逆算 ── 1億円を、年次と人数に翻訳する</div>
+      <div class="sec-sub">数字にしないかぎり、それは願望のままとどまる</div>
+    </div>
+  </div>
+  <p class="sec-lead">下の表は編集できます。売上・常勤換算・拠点数を入れると、右側が自動で出ます。ここで見るべきは「1人あたりが月に何件回る前提になっているか」です。この前提が現実離れしていれば、計画ではなく作文になります。</p>
+
+  <div class="calc">
+    <div class="calc-title">A ── 売上1億円までの年次シナリオ</div>
+    <div class="assump">
+      <label>訪問1件あたり単価 <input type="text" id="unitPrice" inputmode="numeric" value="9000"> 円</label>
+      <label>1人が月に回れる上限 <input type="text" id="capacity" inputmode="numeric" value="95"> 件</label>
+    </div>
+    <div class="tw">
+      <table id="planTable">
+        <thead>
+          <tr>
+            <th>年度</th>
+            <th>売上<span class="t-unit">万円</span></th>
+            <th>常勤換算<span class="t-unit">名</span></th>
+            <th>拠点<span class="t-unit">カ所</span></th>
+            <th>1拠点あたり<span class="t-unit">常勤換算 名</span></th>
+            <th>1人あたり年商<span class="t-unit">万円</span></th>
+            <th>月間訪問／人<span class="t-unit">件</span></th>
+            <th>全社 月間訪問<span class="t-unit">件</span></th>
+            <th>前年比<span class="t-unit">%</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-y="2026"><td>2026年度</td>
+            <td><input type="text" inputmode="numeric" class="p-rev" value="3600"></td>
+            <td><input type="text" inputmode="numeric" class="p-staff" value="4"></td>
+            <td><input type="text" inputmode="numeric" class="p-site" value="1"></td>
+            <td class="derived o-sps"></td><td class="derived o-per"></td><td class="derived o-vpm"></td>
+            <td class="derived o-tot"></td><td class="derived o-yoy"></td></tr>
+          <tr data-y="2027"><td>2027年度</td>
+            <td><input type="text" inputmode="numeric" class="p-rev" value="5400"></td>
+            <td><input type="text" inputmode="numeric" class="p-staff" value="6"></td>
+            <td><input type="text" inputmode="numeric" class="p-site" value="1"></td>
+            <td class="derived o-sps"></td><td class="derived o-per"></td><td class="derived o-vpm"></td>
+            <td class="derived o-tot"></td><td class="derived o-yoy"></td></tr>
+          <tr data-y="2028"><td>2028年度</td>
+            <td><input type="text" inputmode="numeric" class="p-rev" value="7200"></td>
+            <td><input type="text" inputmode="numeric" class="p-staff" value="8"></td>
+            <td><input type="text" inputmode="numeric" class="p-site" value="2"></td>
+            <td class="derived o-sps"></td><td class="derived o-per"></td><td class="derived o-vpm"></td>
+            <td class="derived o-tot"></td><td class="derived o-yoy"></td></tr>
+          <tr data-y="2029"><td>2029年度</td>
+            <td><input type="text" inputmode="numeric" class="p-rev" value="8800"></td>
+            <td><input type="text" inputmode="numeric" class="p-staff" value="10"></td>
+            <td><input type="text" inputmode="numeric" class="p-site" value="2"></td>
+            <td class="derived o-sps"></td><td class="derived o-per"></td><td class="derived o-vpm"></td>
+            <td class="derived o-tot"></td><td class="derived o-yoy"></td></tr>
+          <tr data-y="2030" class="goal-row"><td>2030年度</td>
+            <td><input type="text" inputmode="numeric" class="p-rev" value="10400"></td>
+            <td><input type="text" inputmode="numeric" class="p-staff" value="12"></td>
+            <td><input type="text" inputmode="numeric" class="p-site" value="3"></td>
+            <td class="derived o-sps"></td><td class="derived o-per"></td><td class="derived o-vpm"></td>
+            <td class="derived o-tot"></td><td class="derived o-yoy"></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="calc-note" id="capNote"></div>
+    <div class="calc-note">初期値はあくまで例です。訪問看護ステーションの指定要件は常勤換算2.5名以上。1人あたり月80〜90件が損益分岐の目安とされることが多く、これを超える前提を置くと採用が追いつかない年に計画が折れます。</div>
+  </div>
+
+  <div class="calc">
+    <div class="calc-title">B ── 個人資産1億円の内訳</div>
+    <div class="assump" style="border-bottom:0; padding-bottom:0; margin-bottom:12px">
+      <label>自社株の評価（営業利益 <input type="text" inputmode="numeric" id="opProfit" value="1300"> 万円 × <input type="text" inputmode="numeric" id="multiple" value="4" style="width:56px"> 倍）</label>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>資産の種類</th><th>2030年度末<span class="t-unit">万円</span></th><th>備考（自分で書く）</th></tr></thead>
+        <tbody>
+          <tr><td>自社株の評価額</td><td class="derived" id="stockVal"></td><td style="text-align:left; font-size:12px; color:var(--ink-x)">営業利益 × 倍率で自動計算</td></tr>
+          <tr><td>役員報酬からの蓄積</td><td><input type="text" inputmode="numeric" class="a-item" value="3000"></td><td><input type="text" class="a-memo" placeholder="手取りから毎年いくら残すか"></td></tr>
+          <tr><td>保険・退職金原資</td><td><input type="text" inputmode="numeric" class="a-item" value="1200"></td><td><input type="text" class="a-memo"></td></tr>
+          <tr><td>証券・不動産・その他</td><td><input type="text" inputmode="numeric" class="a-item" value="600"></td><td><input type="text" class="a-memo"></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="sum">
+      <div class="sum-label">合計</div>
+      <div style="text-align:right">
+        <div class="sum-val" id="assetSum">―</div>
+        <div class="sum-gap" id="assetGap"></div>
+      </div>
+    </div>
+    <div class="calc-note">自社株の評価倍率は、訪問看護のM&amp;A事例では営業利益（EBITDA）の3〜5倍程度が語られることが多い水準です。実際の株価評価は税理士の計算方法によって変わるため、ここは「桁の見当をつける」ための欄です。</div>
+  </div>
+
+  <div class="q">
+    <label class="q-label" for="q301">この表を見て、いちばん現実味がないと感じた数字はどれですか。そこを埋める打ち手は何ですか。</label>
+    <div class="q-hint">多くの場合、崩れるのは「採用」です。1年に何人、どの経路で、いくらのコストで採るのか。</div>
+    <textarea id="q301"></textarea>
+  </div>
+
+  <div class="q q-deep">
+    <div class="q-deep-tag">今年度のボトルネック</div>
+    <label class="q-label" for="q302">2026年度の目標を達成できないとしたら、原因は何ですか。1つだけ挙げてください。</label>
+    <div class="q-hint">複数書きたくなりますが、1つに絞ってください。絞れないうちは、まだ現場が見えていないか、決めることから逃げています。</div>
+    <textarea id="q302" class="q-oneline"></textarea>
+  </div>
+</section>
+
+<!-- ============ 04 濁り ============ -->
+<section id="s4">
+  <div class="sec-head">
+    <div class="sec-num">04</div>
+    <div>
+      <div class="sec-title">濁り ── 本気度を下げているものを名指しする</div>
+      <div class="sec-sub">見えていない障害は、避けることも越えることもできない</div>
+    </div>
+  </div>
+  <p class="sec-lead">純度が下がるのは、意志が弱いからではありません。ほとんどは「まだ決めていないこと」が残っているからです。決まっていない項目があるかぎり、脳はそこにエネルギーを使い続けます。</p>
+
+  <div class="q">
+    <div class="q-label">いま頭の中にある「迷い」を、事実と解釈に分けてください。</div>
+    <div class="q-hint">左に、起きている事実だけを書きます（数字・日付・発言）。右に、その事実に自分がつけている意味を書きます。多くの迷いは、右側だけが肥大しています。</div>
+    <div class="split">
+      <div><div class="split-h">事実（検証できること）</div>
+        <textarea id="q401" style="min-height:120px"></textarea></div>
+      <div><div class="split-h">解釈（自分がつけた意味）</div>
+        <textarea id="q402" style="min-height:120px"></textarea></div>
+    </div>
+  </div>
+
+  <div class="q">
+    <label class="q-label" for="q403">あなたが最近使った「言い訳」を、そのままの言葉で書いてください。</label>
+    <div class="q-hint">「忙しい」「人がいない」「制度が変わるから」。丸めずに、実際に口に出した文のまま書くと効きます。</div>
+    <textarea id="q403"></textarea>
+  </div>
+
+  <div class="q">
+    <label class="q-label" for="q404">あなたはいま、誰の目を気にして判断していますか。</label>
+    <div class="q-hint">同業の経営者、元の職場の同僚、家族、スタッフ。他人軸の判断が1つでも残っていると、そこが目標の上限になります。</div>
+    <textarea id="q404"></textarea>
+  </div>
+
+  <div class="q q-deep">
+    <div class="q-deep-tag">やらないと決めること</div>
+    <label class="q-label" for="q405">1億円に関係しないのに、いまカレンダーを占めているものを3つ挙げ、それぞれ「やめる／人に渡す／続ける」を決めてください。</label>
+    <div class="q-hint">続けると決めたものは、理由も書きます。理由が書けないものは、実質やめられます。</div>
+    <textarea id="q405" style="min-height:110px" placeholder="1. ──　→ やめる／渡す／続ける（理由：　　）&#10;2. ──&#10;3. ──"></textarea>
+  </div>
+
+  <div class="q q-oneline">
+    <label class="q-label" for="q406">今週、実際にやめることを1つだけ書いてください。</label>
+    <textarea id="q406"></textarea>
+  </div>
+</section>
+
+<!-- ============ 05 習慣 ============ -->
+<section id="s5">
+  <div class="sec-head">
+    <div class="sec-num">05</div>
+    <div>
+      <div class="sec-title">習慣 ── 純度を、日々もとの濃さに戻す</div>
+      <div class="sec-sub">決意は必ず薄まる。薄まる前提で、戻す仕組みを持つ</div>
+    </div>
+  </div>
+  <p class="sec-lead">本気度は一度上げて終わりではなく、日々薄まっていくものです。だから、意志ではなく仕組みで戻します。ここが埋まっていれば、01〜04は生き続けます。</p>
+
+  <div class="vow">
+    <div class="split-h" style="margin-bottom:9px">毎朝、声に出して読む宣言文</div>
+    <textarea id="q501" placeholder="私は、2030年度に売上1億円・個人資産1億円を達成する。それは──"></textarea>
+    <div class="q-hint" style="margin-top:8px; margin-bottom:0">01で書いた理念の一文と、02のビジョンの中でいちばん鮮明な一場面を、つなげて書きます。読むのに20秒以内が目安です。</div>
+  </div>
+
+  <div class="q">
+    <div class="q-label">毎日チェックする3つの行動</div>
+    <div class="q-hint">「1億円に直接つながる行動」だけを置きます。訪問件数、新規依頼への即日返答、ケアマネ訪問、面談、採用の連絡など。左の欄は自由に書き換えられます。</div>
+    <div class="tw">
+      <table class="week" id="weekTable">
+        <thead><tr><th class="week-item">行動</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th><th>日</th></tr></thead>
+        <tbody>
+          <tr><td class="week-item"><input type="text" id="w1" value="宣言文を声に出して読んだ"></td></tr>
+          <tr><td class="week-item"><input type="text" id="w2" value="新規依頼・相談に当日中に返した"></td></tr>
+          <tr><td class="week-item"><input type="text" id="w3" value="数字（訪問件数・新規・退職リスク）を見た"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="q">
+    <label class="q-label" for="q502">毎週の振り返り（日曜の夜／15分）で自分に問うこと</label>
+    <div class="q-hint">3問だけ決めておきます。問いが多いと続きません。</div>
+    <textarea id="q502" placeholder="1. 今週、1億円に近づいた行動は何か&#10;2. 今週、他人軸で判断した場面はどこか&#10;3. 来週、絶対に落とさない1つは何か"></textarea>
+  </div>
+
+  <div class="q">
+    <label class="q-label" for="q503">毎月チェックする数字（月初に前月実績を入れる）</label>
+    <textarea id="q503" class="q-oneline" placeholder="月間訪問件数／新規依頼件数／稼働率／常勤換算人数／人件費率／営業利益"></textarea>
+  </div>
+
+  <div class="q">
+    <label class="q-label" for="q504">四半期ごとに、このノートを読み返す日はいつですか。</label>
+    <div class="q-hint">日付を決めて、いま予定表に入れてください。「気が向いたら」は仕組みではありません。</div>
+    <textarea id="q504" class="q-oneline" placeholder="例：4/1・7/1・10/1・1/1 の朝7時／各30分"></textarea>
+  </div>
+
+  <div class="q q-deep">
+    <div class="q-deep-tag">署名</div>
+    <label class="q-label" for="q505">今日の日付と、自分の名前を書いてください。</label>
+    <div class="q-hint">書いた瞬間に、これは資料から約束に変わります。</div>
+    <textarea id="q505" class="q-oneline" placeholder="2026年　月　日　　氏名："></textarea>
+  </div>
+</section>
+
+<div class="closing">
+  <p class="mincho">純度は、書いた量ではなく、書き直した回数で上がります。<br>次に開いたとき、違和感のある一文から直してください。</p>
+  <div class="saved" id="savedMsg"></div>
+</div>
+
+</main>
+
+<script>
+(function(){
+  "use strict";
+  var KEY = "pw_v1_";
+  var store = {
+    get: function(k){ try { return localStorage.getItem(KEY+k); } catch(e){ return null; } },
+    set: function(k,v){ try { localStorage.setItem(KEY+k,v); } catch(e){} },
+    del: function(k){ try { localStorage.removeItem(KEY+k); } catch(e){} }
+  };
+
+  /* ---- 週チェックのセルを生成 ---- */
+  var weekBody = document.querySelector("#weekTable tbody");
+  Array.prototype.forEach.call(weekBody.rows, function(row, ri){
+    for (var d = 0; d < 7; d++){
+      var td = row.insertCell(-1);
+      var lab = document.createElement("label");
+      var cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.id = "wk_" + ri + "_" + d;
+      cb.setAttribute("aria-label", "行動" + (ri+1) + " " + "月火水木金土日".charAt(d) + "曜");
+      lab.appendChild(cb);
+      td.appendChild(lab);
+    }
+  });
+
+  /* ---- 保存対象の収集 ---- */
+  var fields = [].slice.call(document.querySelectorAll("textarea, input[type='text'], input[type='checkbox']"))
+    .filter(function(el){ return el.id; });
+
+  var savedMsg = document.getElementById("savedMsg");
+  var saveTimer = null;
+  function flash(){
+    savedMsg.textContent = "保存しました";
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function(){ savedMsg.textContent = ""; }, 1600);
+  }
+
+  fields.forEach(function(el){
+    var v = store.get(el.id);
+    if (v !== null){
+      if (el.type === "checkbox") el.checked = (v === "1");
+      else el.value = v;
+    }
+    var ev = (el.type === "checkbox") ? "change" : "input";
+    el.addEventListener(ev, function(){
+      store.set(el.id, el.type === "checkbox" ? (el.checked ? "1" : "0") : el.value);
+      flash();
+      updateMeter();
+      if (el.classList.contains("p-rev") || el.classList.contains("p-staff") ||
+          el.classList.contains("a-item") || el.id === "unitPrice" ||
+          el.id === "capacity" || el.id === "opProfit" || el.id === "multiple") recalc();
+    });
+  });
+
+  /* ---- 記入率 ---- */
+  var meterFill = document.getElementById("meterFill");
+  var meterNum  = document.getElementById("meterNum");
+  var writable = fields.filter(function(el){ return el.tagName === "TEXTAREA"; });
+  function updateMeter(){
+    var done = writable.filter(function(el){ return el.value.trim().length > 0; }).length;
+    var pct = writable.length ? Math.round(done / writable.length * 100) : 0;
+    meterFill.style.width = pct + "%";
+    meterNum.textContent = "記入 " + done + " / " + writable.length + "（" + pct + "%）";
+  }
+
+  /* ---- 数値ユーティリティ ---- */
+  function num(el){
+    var n = parseFloat(String(el.value).replace(/[^0-9.\-]/g, ""));
+    return isFinite(n) ? n : 0;
+  }
+  function fmt(n){
+    if (!isFinite(n)) return "―";
+    return Math.round(n).toLocaleString("ja-JP");
+  }
+
+  /* ---- 逆算表と資産表の再計算 ---- */
+  var rows = [].slice.call(document.querySelectorAll("#planTable tbody tr"));
+  var capNote = document.getElementById("capNote");
+
+  function recalc(){
+    var price = num(document.getElementById("unitPrice"));
+    var cap   = num(document.getElementById("capacity"));
+    var prev = null, over = [], under = [];
+
+    rows.forEach(function(tr){
+      var rev   = num(tr.querySelector(".p-rev"));    // 万円
+      var staff = num(tr.querySelector(".p-staff"));
+      var yen   = rev * 10000;
+      var per   = staff > 0 ? rev / staff : NaN;
+      var total = price > 0 ? yen / 12 / price : NaN;
+      var vpm   = (staff > 0 && isFinite(total)) ? total / staff : NaN;
+
+      var sites = num(tr.querySelector(".p-site"));
+      var sps   = sites > 0 ? staff / sites : NaN;
+      tr.querySelector(".o-sps").textContent = isFinite(sps) ? sps.toFixed(1) : "―";
+      if (isFinite(sps) && sps < 2.5) under.push(tr.dataset.y);
+      tr.querySelector(".o-per").textContent = staff > 0 ? fmt(per) : "―";
+      tr.querySelector(".o-vpm").textContent = isFinite(vpm) ? fmt(vpm) : "―";
+      tr.querySelector(".o-tot").textContent = isFinite(total) ? fmt(total) : "―";
+      tr.querySelector(".o-yoy").textContent =
+        (prev && prev > 0) ? fmt(rev / prev * 100) : "―";
+
+      if (isFinite(vpm) && cap > 0 && vpm > cap) over.push(tr.dataset.y);
+      prev = rev;
+    });
+
+    var msgs = [];
+    if (over.length) msgs.push("⚠ " + over.join("・") + "年度は、1人あたり月" + fmt(cap) + "件の上限を超えています。売上を下げるか、人数を増やすか、単価を上げるかのどれかを決めてください。");
+    if (under.length) msgs.push("⚠ " + under.join("・") + "年度は、1拠点あたりの常勤換算が2.5名を下回ります。指定基準を満たさないため、拠点を増やす年をずらすか、採用を前倒ししてください。");
+    if (!msgs.length) msgs.push("1人あたりの月間訪問件数は上限（月" + fmt(cap) + "件）の範囲内、1拠点あたりの常勤換算も2.5名以上を満たしています。");
+    capNote.textContent = msgs.join(" ");
+
+    /* 資産 */
+    var stock = num(document.getElementById("opProfit")) * num(document.getElementById("multiple"));
+    document.getElementById("stockVal").textContent = fmt(stock);
+    var sum = stock;
+    [].slice.call(document.querySelectorAll(".a-item")).forEach(function(el){ sum += num(el); });
+    document.getElementById("assetSum").textContent = fmt(sum) + " 万円";
+    var gapEl = document.getElementById("assetGap");
+    var gap = 10000 - sum;
+    if (gap <= 0){
+      gapEl.textContent = "1億円まで到達（+" + fmt(-gap) + " 万円）";
+      gapEl.classList.add("done");
+    } else {
+      gapEl.textContent = "1億円まで あと " + fmt(gap) + " 万円";
+      gapEl.classList.remove("done");
+    }
+  }
+
+  /* ---- 全文コピー ---- */
+  document.getElementById("copyBtn").addEventListener("click", function(){
+    var out = ["本気度の純度ノート ／ 2030年度 売上1億円・個人資産1億円", ""];
+    [].slice.call(document.querySelectorAll("section")).forEach(function(sec){
+      out.push("──────────────────────────────");
+      out.push(sec.querySelector(".sec-num").textContent + "　" +
+               sec.querySelector(".sec-title").textContent);
+      out.push("");
+      [].slice.call(sec.querySelectorAll("textarea")).forEach(function(ta){
+        var lab = sec.querySelector("label[for='" + ta.id + "']") ||
+                  (ta.closest(".q") ? ta.closest(".q").querySelector(".q-label, .split-h") : null);
+        var head = ta.previousElementSibling && ta.previousElementSibling.classList.contains("split-h")
+                 ? ta.previousElementSibling.textContent : (lab ? lab.textContent : "");
+        out.push("■ " + head);
+        out.push(ta.value.trim() || "（未記入）");
+        out.push("");
+      });
+      var tbl = sec.querySelector("#planTable");
+      if (tbl){
+        out.push("■ 年次シナリオ（年度／売上万円／常勤換算／拠点／1人あたり年商／月訪問per人）");
+        rows.forEach(function(tr){
+          out.push([tr.cells[0].textContent,
+                    tr.querySelector(".p-rev").value,
+                    tr.querySelector(".p-staff").value,
+                    tr.querySelector(".p-site").value,
+                    tr.querySelector(".o-per").textContent,
+                    tr.querySelector(".o-vpm").textContent].join(" / "));
+        });
+        out.push("");
+        out.push("■ 個人資産の合計：" + document.getElementById("assetSum").textContent +
+                 "（" + document.getElementById("assetGap").textContent + "）");
+        out.push("");
+      }
+    });
+    var text = out.join("\n");
+    var btn = this;
+    function done(ok){
+      btn.textContent = ok ? "コピーしました" : "コピーできません";
+      setTimeout(function(){ btn.textContent = "全文コピー"; }, 1800);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ done(true); }, function(){ done(false); });
+    } else {
+      var ta = document.createElement("textarea");
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch(e){}
+      document.body.removeChild(ta); done(ok);
+    }
+  });
+
+  /* ---- 全消去 ---- */
+  document.getElementById("clearBtn").addEventListener("click", function(){
+    if (!window.confirm("書き込んだ内容をすべて消します。よろしいですか？")) return;
+    fields.forEach(function(el){
+      store.del(el.id);
+      if (el.type === "checkbox") el.checked = false;
+      else if (el.tagName === "TEXTAREA") el.value = "";
+    });
+    updateMeter();
+    savedMsg.textContent = "消去しました";
+    setTimeout(function(){ savedMsg.textContent = ""; }, 1600);
+  });
+
+  recalc();
+  updateMeter();
+})();
+</script>
