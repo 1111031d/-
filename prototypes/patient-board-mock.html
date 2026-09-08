@@ -130,6 +130,14 @@ tr.grouphead:hover td{background:var(--surface-2)}
 .mark:hover{border-color:currentColor}
 .mark .dt{font-size:10px; opacity:.8; margin-left:3px; font-family:"Roboto Mono",monospace}
 .na{color:var(--ink-3); font-size:11px; cursor:help}
+.skipbtn{font-family:inherit; font-size:10.5px; padding:2px 8px; border-radius:10px;
+  border:1px dashed var(--line-strong); background:transparent; color:var(--ink-3); cursor:pointer; white-space:nowrap}
+.skipbtn:hover{border-color:var(--accent); color:var(--accent)}
+.skipon{display:inline-flex; align-items:center; gap:3px}
+.skipon select{font-size:10.5px; padding:2px 5px; border-radius:3px; border-color:var(--warn);
+  background:var(--warn-soft); color:var(--warn)}
+.skipx{font-family:inherit; border:none; background:none; color:var(--ink-2); cursor:pointer; font-size:13px; padding:0 2px; line-height:1}
+.skipx:hover{color:var(--crit)}
 
 .empty{padding:44px 20px; text-align:center; color:var(--ink-2); font-size:13px}
 .footnote{margin-top:16px; font-size:12px; color:var(--ink-2); line-height:1.85}
@@ -208,7 +216,7 @@ p.seclead{font-size:12px; color:var(--ink-2); margin:0 0 14px; max-width:74ch}
       <span><i class="sw" style="background:var(--line-strong)"></i>未提出（期限に余裕）</span>
       <span><i class="sw" style="background:var(--warn)"></i>期限まで7日以内</span>
       <span><i class="sw" style="background:var(--crit)"></i>期限超過</span>
-      <span><i class="sw" style="background:var(--ink-3)"></i>― は今月は対象外（自動判定）</span>
+      <span><i class="sw" style="background:var(--ink-3)"></i>― は対象外（自動判定、または「今月は不要」にした人）</span>
     </div>
     <div class="tablewrap">
       <table>
@@ -216,13 +224,13 @@ p.seclead{font-size:12px; color:var(--ink-2); margin:0 0 14px; max-width:74ch}
           <tr>
             <th rowspan="2" style="text-align:left">利用者</th>
             <th rowspan="2" style="text-align:left">保険</th>
-            <th colspan="3" class="grp">計画書</th>
+            <th colspan="4" class="grp">計画書</th>
             <th colspan="2" class="grp">報告書</th>
             <th colspan="1" class="grp">サービス提供票</th>
             <th rowspan="2" class="grp" style="text-align:left">指示書の期限</th>
           </tr>
           <tr>
-            <th class="grp">主治医</th><th>ケアマネ</th><th>本人サイン</th>
+            <th class="grp">主治医</th><th>ケアマネ</th><th>本人サイン</th><th>今月は不要</th>
             <th class="grp">主治医</th><th>ケアマネ</th>
             <th class="grp">ケアマネ</th>
           </tr>
@@ -234,6 +242,7 @@ p.seclead{font-size:12px; color:var(--ink-2); margin:0 0 14px; max-width:74ch}
       <strong>対象月について：</strong>8月分の書類は9月4日が提出期限なので、9月に作業するときは「8月分」を選びます。最初から前月が選ばれています。<br>
       <strong>計画書の「―」：</strong>その利用者の作成サイクル（3・6・9・12月／毎月／指示書の更新月）から、その月に不要な人を<strong>自動で対象外にします</strong>。「9月は不要」と手で書く必要はありません。<br>
       <strong>ケアマネの欄：</strong>居宅事業所が付いていない方（医療保険のみなど）は自動で対象外になります。<br>
+      <strong>個別に外したいとき：</strong>終了予定や入院中など、その月だけ計画書が不要な方は「今月は不要」を押して理由を選びます。日付欄に文字を書かなくて済むので、計算がエラーになりません。<br>
       <strong>提出日：</strong>「未」を押すと今日の日付で「済」になります。もう一度押すと戻ります。
     </p>
   </section>
@@ -415,6 +424,11 @@ const DEFAULT_MONTH = months[1]; // 前月分＝いま作業している月
 /* 指示書の更新月（＝有効期限が来る月） */
 const shijiMonth = p => (addDays(TODAY, p.shiji)).getMonth() + 1;
 
+/* 個別の例外：その月だけ計画書を不要にする */
+const SKIP_REASONS = ['終了予定','入院中','サービス中止中','その他'];
+const skips = {};
+const skipOf = (p, ym) => (skips[ym] && skips[ym][p.id]) || null;
+
 /* その月に計画書を作るか */
 function planTarget(p, ym){
   const m = Number(ym.split('-')[1]);
@@ -427,6 +441,7 @@ function applicable(p, ym, dk, sk){
   if(sk === 'cm'   && p.cm === '―') return false;
   if(dk === 'teikyo' && p.hoken !== '介護') return false;
   if(dk === 'plan'){
+    if(skipOf(p, ym)) return false;
     if(!planTarget(p, ym)) return false;
     if(sk === 'self' && !p.honnin) return false;
   }
@@ -450,6 +465,10 @@ function seedMonth(ym){
     rec[ym][p.id] = r;
   });
 }
+months.forEach(ym => { skips[ym] = {}; });
+/* デモ用：今月だけ計画書が不要な方を2名 */
+skips[DEFAULT_MONTH][1]  = '終了予定';
+skips[DEFAULT_MONTH][11] = '入院中';
 months.forEach(seedMonth);
 function ensurePatient(p){ months.forEach(ym => { if(!rec[ym][p.id]) rec[ym][p.id] = blank(); }); }
 
@@ -514,7 +533,8 @@ function cellHTML(p, dk, sk, grp){
   const c = cellState(p, S.month, dk, sk);
   const td = `<td class="center${grp?' grp':''}">`;
   if(c.s === 'na'){
-    const why = dk==='plan' && !planTarget(p,S.month) ? `今月は計画書の作成月ではありません（${RULE_LABEL[p.rule]}）`
+    const why = dk==='plan' && skipOf(p,S.month) ? `今月は不要にしています（${skipOf(p,S.month)}）`
+              : dk==='plan' && !planTarget(p,S.month) ? `今月は計画書の作成月ではありません（${RULE_LABEL[p.rule]}）`
               : sk==='cm' && p.cm==='―' ? 'ケアマネが付いていないため対象外'
               : dk==='teikyo' ? '医療保険のため対象外' : '本人サインは不要な設定です';
     return td + `<span class="na" title="${esc(why)}">―</span></td>`;
@@ -526,6 +546,20 @@ function cellHTML(p, dk, sk, grp){
     aria-pressed="${c.s==='done'}">${label}</button></td>`;
 }
 
+function skipCellHTML(p){
+  const cur = skipOf(p, S.month);
+  if(cur){
+    return `<td class="center"><span class="skipon">
+      <select data-skip="${p.id}" aria-label="${esc(p.name)} を今月不要にした理由">
+        ${SKIP_REASONS.map(r=>`<option${r===cur?' selected':''}>${esc(r)}</option>`).join('')}
+      </select>
+      <button class="skipx" data-unskip="${p.id}" title="対象に戻す" aria-label="${esc(p.name)} を対象に戻す">×</button>
+    </span></td>`;
+  }
+  if(!planTarget(p, S.month)) return `<td class="center"><span class="na" title="そもそも今月は作成月ではありません">―</span></td>`;
+  return `<td class="center"><button class="skipbtn" data-skip-on="${p.id}">今月は不要</button></td>`;
+}
+
 function renderBoard(){
   const due = dueOf(S.month);
   const [y,m] = S.month.split('-');
@@ -534,14 +568,14 @@ function renderBoard(){
   const rows = boardRows();
   $('#board-count').textContent = `${rows.length} 名を表示中（利用中 ${active().length} 名）`;
   if(!rows.length){
-    $('#board-body').innerHTML = `<tr><td colspan="9" class="empty">該当する方はいません。<br>「未提出だけ表示」を解除すると全員が出ます。</td></tr>`;
+    $('#board-body').innerHTML = `<tr><td colspan="10" class="empty">該当する方はいません。<br>「未提出だけ表示」を解除すると全員が出ます。</td></tr>`;
     return;
   }
   let html = '', last = null;
   rows.forEach(p => {
     if(S.group && p.hospital !== last){
       last = p.hospital;
-      html += `<tr class="grouphead"><td colspan="9">${esc(last)}　${rows.filter(x=>x.hospital===last).length}名</td></tr>`;
+      html += `<tr class="grouphead"><td colspan="10">${esc(last)}　${rows.filter(x=>x.hospital===last).length}名</td></tr>`;
     }
     const cs = cellsOf(p), s = shijiInfo(p);
     const over = cs.some(c => c.s === 'over'), todo = cs.some(c => c.s !== 'na' && c.s !== 'done');
@@ -550,7 +584,7 @@ function renderBoard(){
         <span class="psub">${esc(p.doctor)}（${esc(p.hospital)}）</span>
         <span class="psub">${p.cm==='―' ? '<span class="muted">ケアマネなし</span>' : esc(p.cm)+'（'+esc(p.kyotaku)+'）'}</span></td>
       <td><span class="tag ${p.hoken==='介護'?'kaigo':'iryo'}">${p.hoken}</span></td>
-      ${cellHTML(p,'plan','doctor',true)}${cellHTML(p,'plan','cm')}${cellHTML(p,'plan','self')}
+      ${cellHTML(p,'plan','doctor',true)}${cellHTML(p,'plan','cm')}${cellHTML(p,'plan','self')}${skipCellHTML(p)}
       ${cellHTML(p,'report','doctor',true)}${cellHTML(p,'report','cm')}
       ${cellHTML(p,'teikyo','cm',true)}
       <td class="nowrap grp"><span class="tag ${s.cls}">${s.text}</span>
@@ -616,7 +650,18 @@ function renderMaster(){
 }
 
 /* ===== 操作 ===== */
+document.addEventListener('change', e => {
+  const sel = e.target.closest('select[data-skip]');
+  if(!sel) return;
+  skips[S.month][+sel.dataset.skip] = sel.value;
+  renderBoard();
+});
+
 document.addEventListener('click', e => {
+  const on = e.target.closest('[data-skip-on]');
+  if(on){ skips[S.month][+on.dataset.skipOn] = SKIP_REASONS[0]; renderBoard(); return; }
+  const off = e.target.closest('[data-unskip]');
+  if(off){ delete skips[S.month][+off.dataset.unskip]; renderBoard(); return; }
   const m = e.target.closest('.mark');
   if(!m) return;
   if(m.dataset.pid){
