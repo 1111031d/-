@@ -1,0 +1,398 @@
+<title>訪問看護ステーションの土台づくり</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --ground:#f4f6f3;
+  --surface:#ffffff;
+  --surface-2:#eceee8;
+  --ink:#16211f;
+  --ink-2:#4c5a56;
+  --ink-3:#7a8783;
+  --rule:#d7ddd6;
+  --rule-strong:#b6c0b8;
+  --accent:#1f5e4b;
+  --accent-soft:#e2ede8;
+  --warn:#a2502a;
+  --warn-soft:#f6e9e1;
+  --ok:#2f6b4f;
+  --shadow:rgba(22,33,31,.08);
+  --serif:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --sans:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#121816;
+    --surface:#1a221f;
+    --surface-2:#222c29;
+    --ink:#e8ede9;
+    --ink-2:#b2beb9;
+    --ink-3:#8b9793;
+    --rule:#2e3a36;
+    --rule-strong:#42504b;
+    --accent:#79c2a4;
+    --accent-soft:#1e2f28;
+    --warn:#e0996f;
+    --warn-soft:#2e241d;
+    --ok:#79c2a4;
+    --shadow:rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#121816;
+  --surface:#1a221f;
+  --surface-2:#222c29;
+  --ink:#e8ede9;
+  --ink-2:#b2beb9;
+  --ink-3:#8b9793;
+  --rule:#2e3a36;
+  --rule-strong:#42504b;
+  --accent:#79c2a4;
+  --accent-soft:#1e2f28;
+  --warn:#e0996f;
+  --warn-soft:#2e241d;
+  --ok:#79c2a4;
+  --shadow:rgba(0,0,0,.4);
+}
+
+body{background:var(--ground);color:var(--ink);font-family:var(--sans);line-height:1.85;font-size:15px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:800px;margin:0 auto;padding:0 22px 96px}
+
+/* ---- header ---- */
+header{padding:56px 0 30px;border-bottom:2px solid var(--ink);margin-bottom:38px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--accent);text-transform:uppercase;margin-bottom:14px}
+h1{font-family:var(--serif);font-size:clamp(28px,5.4vw,42px);line-height:1.32;font-weight:700;letter-spacing:.01em;text-wrap:balance;margin-bottom:14px}
+.lede{color:var(--ink-2);font-size:15px;max-width:62ch}
+.meta{margin-top:20px;display:flex;flex-wrap:wrap;gap:8px 18px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em}
+
+/* ---- summary ---- */
+.summary{border-left:3px solid var(--accent);padding:4px 0 4px 20px;display:flex;flex-direction:column;gap:16px;margin-bottom:52px}
+.summary h2{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--accent);font-weight:600;margin-bottom:2px}
+.summary p{max-width:64ch}
+.summary b{font-weight:700;color:var(--ink)}
+
+/* ---- sections ---- */
+section{margin-bottom:62px;scroll-margin-top:20px}
+.sec-head{display:flex;align-items:baseline;gap:14px;padding-bottom:12px;border-bottom:1px solid var(--rule-strong);margin-bottom:26px}
+.sec-num{font-family:var(--serif);font-size:24px;color:var(--accent);line-height:1;flex-shrink:0}
+h2.sec-title{font-family:var(--serif);font-size:clamp(20px,3.4vw,25px);font-weight:700;line-height:1.4;text-wrap:balance}
+.sec-q{font-size:13px;color:var(--ink-3);margin-left:auto;text-align:right;flex-shrink:0;display:none}
+@media(min-width:720px){.sec-q{display:block}}
+
+h3{font-family:var(--sans);font-size:16px;font-weight:700;margin:34px 0 12px;letter-spacing:.01em;display:flex;align-items:center;gap:9px}
+h3::before{content:"";width:7px;height:7px;background:var(--accent);border-radius:1px;flex-shrink:0}
+h3:first-of-type{margin-top:0}
+p{max-width:66ch;margin-bottom:14px}
+p:last-child{margin-bottom:0}
+strong{font-weight:700}
+.term{color:var(--ink-3);font-size:13.5px}
+
+ul.plain{list-style:none;display:flex;flex-direction:column;gap:10px;margin:0 0 16px}
+ul.plain li{padding-left:20px;position:relative;max-width:66ch}
+ul.plain li::before{content:"—";position:absolute;left:0;color:var(--rule-strong)}
+
+/* ---- tables ---- */
+.tw{overflow-x:auto;margin:6px 0 20px;border:1px solid var(--rule);border-radius:3px;background:var(--surface)}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:520px}
+th{background:var(--surface-2);text-align:left;font-weight:700;font-size:11.5px;letter-spacing:.07em;color:var(--ink-2);padding:10px 14px;border-bottom:1px solid var(--rule);white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid var(--rule);vertical-align:top;line-height:1.7}
+tr:last-child td{border-bottom:none}
+td.num,th.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td.key{font-weight:700;white-space:nowrap}
+.yes{color:var(--ok);font-weight:700}
+.no{color:var(--warn);font-weight:700}
+
+/* ---- callout ---- */
+.callout{background:var(--warn-soft);border:1px solid var(--warn);border-radius:3px;padding:18px 20px;margin:22px 0}
+.callout .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--warn);font-weight:600;display:block;margin-bottom:8px}
+.callout p{max-width:none}
+.note{background:var(--surface-2);border-radius:3px;padding:14px 18px;margin:18px 0;font-size:13.5px;color:var(--ink-2)}
+.note p{max-width:none;margin-bottom:0}
+
+/* ---- priority list ---- */
+.phase{margin-bottom:26px}
+.phase-hd{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.phase-when{font-family:var(--mono);font-size:11px;letter-spacing:.1em;padding:4px 10px;border-radius:2px;background:var(--accent);color:var(--ground);font-weight:600;white-space:nowrap}
+.phase-hd.later .phase-when{background:var(--surface-2);color:var(--ink-2);border:1px solid var(--rule-strong)}
+.phase-hd .cap{font-size:13px;color:var(--ink-3)}
+ol.steps{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:12px;margin:0}
+ol.steps li{counter-increment:s;display:flex;gap:14px;align-items:flex-start;padding-bottom:12px;border-bottom:1px dotted var(--rule)}
+ol.steps li:last-child{border-bottom:none;padding-bottom:0}
+ol.steps li::before{content:counter(s,decimal-leading-zero);font-family:var(--mono);font-size:11px;color:var(--ink-3);padding-top:5px;flex-shrink:0}
+ol.steps .t{font-weight:700;display:block}
+ol.steps .d{color:var(--ink-2);font-size:13.5px;display:block;margin-top:2px}
+
+/* ---- sources ---- */
+footer{border-top:1px solid var(--rule-strong);padding-top:24px;margin-top:10px}
+footer h2{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--ink-3);margin-bottom:14px}
+footer ul{list-style:none;display:flex;flex-direction:column;gap:7px;font-size:12.5px}
+footer a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--rule-strong)}
+footer a:hover{border-bottom-color:var(--accent)}
+footer a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.disclaimer{margin-top:22px;font-size:12px;color:var(--ink-3);max-width:66ch}
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Operations Memo / 2026.09</div>
+  <h1>訪問看護ステーションの土台づくり</h1>
+  <p class="lede">スタッフ1名の今だからこそ、安く・速く・やり直しなしで整えられる。勤怠、残業、LINE WORKS、そしてその周辺の仕組みを、着手すべき順番で並べたメモです。</p>
+  <div class="meta">
+    <span>前提：訪問看護ステーション</span>
+    <span>スタッフ 1 名</span>
+    <span>勤怠記録 なし</span>
+    <span>LINE WORKS フリープラン</span>
+  </div>
+</header>
+
+<div class="summary">
+  <h2>結論</h2>
+  <p><b>① 勤怠は今月から始める。</b>「1人だからまだいい」は逆です。記録は後から遡って作れず、法律上は今すでに義務が発生しています。無料〜数百円のクラウド勤怠で十分。</p>
+  <p><b>② 残業管理は勤怠システムだけでは回りません。</b>「移動時間」「記録を書く時間」「オンコール待機」を労働時間として数えるかどうかを先に決める必要があります。ここが訪問看護で一番もめる場所です。</p>
+  <p><b>③ 先輩のLINE WORKS運用は再現できるし、有効です。</b>ただし利用者の氏名や指示書そのものをトークに流さない設計が前提。フリープランにはファイル保管庫（Drive）が無いので、書類は別の置き場所が要ります。</p>
+</div>
+
+<!-- ============ 1 ============ -->
+<section>
+  <div class="sec-head">
+    <span class="sec-num">①</span>
+    <h2 class="sec-title">勤怠 ── 「1人だからまだいい」が一番危ない</h2>
+  </div>
+
+  <h3>今すでに義務が発生しています</h3>
+  <p>スタッフが1人でも、雇用している時点で下記が課されます。人数による免除はありません。</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>根拠</th><th>何を求められるか</th><th>ポイント</th></tr></thead>
+      <tbody>
+        <tr><td class="key">労働安全衛生法<br>66条の8の3</td><td>労働時間の「状況」を、タイムカードやPC・スマホの記録など<strong>客観的な方法</strong>で把握し記録する</td><td>2019年4月から。管理職も含め全員が対象。記録は3年保存</td></tr>
+        <tr><td class="key">労働基準法<br>108条・109条</td><td>賃金台帳に労働日数・労働時間数・時間外・深夜・休日労働の時間数を記載し保存</td><td>保存は5年（当分の間3年）</td></tr>
+        <tr><td class="key">労働基準法<br>36条</td><td>1日8時間／週40時間を超える労働、法定休日の労働をさせるなら<strong>36協定の届出</strong></td><td>オンコール出動が1回でも発生したら必要。今のうちに出しておくのが安全</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="term">※「客観的な方法」とは、本人の自己申告だけに頼らない記録のこと。打刻アプリやタイムカードが典型です。</p>
+
+  <div class="callout">
+    <span class="tag">記録が無いことの本当のリスク</span>
+    <p>労働時間の記録が無い状態で「残業代が支払われていない」と主張された場合、会社側に反証する材料がありません。手帳やLINEの送信時刻など、労働者側が持つ資料が採用されやすくなります。1人分の記録を作るコストは月数百円ですが、後から争うコストは桁が違います。</p>
+  </div>
+
+  <h3>訪問看護で外せない3条件</h3>
+  <ul class="plain">
+    <li><strong>スマホのGPS打刻</strong>ができること。直行直帰が前提の仕事なので、事業所の端末で打刻する方式は成立しません。</li>
+    <li><strong>深夜（22時〜5時）・休日を自動判定</strong>して集計してくれること。オンコール出動は深夜にかかるため、手計算だと必ず崩れます。</li>
+    <li><strong>訪問1件ごとの時刻</strong>が残るか、訪問看護記録システムと突き合わせできること。移動時間の説明がつきます。</li>
+  </ul>
+
+  <h3>候補の考え方</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>タイプ</th><th>代表例</th><th>向いている場合</th></tr></thead>
+      <tbody>
+        <tr><td class="key">勤怠に特化した<br>クラウド</td><td>ジョブカン勤怠／KING OF TIME／ハーモス勤怠 など</td><td><strong>まずはここ。</strong>数名までは無料枠や1人数百円で足りる。GPS打刻・深夜判定が標準装備</td></tr>
+        <tr><td class="key">給与ソフト<br>一体型</td><td>freee人事労務／マネーフォワード クラウド</td><td>給与計算・年末調整まで一気通貫にしたい場合。スタッフ3名を超えたあたりから効いてくる</td></tr>
+        <tr><td class="key">訪問看護<br>システム内蔵</td><td>iBow／カイポケ／Homis など</td><td>すでに訪問記録システムを使っているなら、勤怠機能の有無を確認。記録と勤怠が繋がるのが最大の利点</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>おすすめの進め方は<strong>「今月、無料枠のクラウド勤怠を1つ入れて、まず経営者自身が1か月打刻してみる」</strong>。1人で回して運用の粗を潰してから、2人目に展開すれば説明コストがほぼゼロになります。経営者自身が訪問に出ているなら、その時間も記録対象です（労災や監査の際の証拠になります）。</p>
+</section>
+
+<!-- ============ 2 ============ -->
+<section>
+  <div class="sec-head">
+    <span class="sec-num">②</span>
+    <h2 class="sec-title">残業 ── 勤怠システムは「器」、中身のルールは別に要る</h2>
+  </div>
+
+  <p>結論から言うと、<strong>勤怠システムを入れれば残業管理はOK、とはなりません。</strong>勤怠システムは「何時から何時まで働いたか」を記録する器です。訪問看護では、その前に「どこからどこまでを労働時間と数えるか」を決めないと、集計された数字の意味が定まりません。</p>
+
+  <h3>先に決めるべき4つ</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>論点</th><th>一般的な考え方</th><th>決めておくこと</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="key">移動時間</td>
+          <td>事業所→利用者宅、利用者宅→次の利用者宅は<strong>労働時間</strong>。自宅→最初の訪問先（直行）は通勤扱いが一般的だが、途中で指示を受けたり事業所に寄る運用だと労働時間になり得る</td>
+          <td>直行直帰の日の始業・終業をどの時点にするか</td>
+        </tr>
+        <tr>
+          <td class="key">記録・報告書<br>の作成時間</td>
+          <td><strong>労働時間</strong>。自宅で夜に書いていてもそれは労働時間</td>
+          <td>持ち帰り作業を認めるのか、認めるなら打刻をどうするか。<strong>訪問看護の未払い残業で一番火種になる箇所</strong></td>
+        </tr>
+        <tr>
+          <td class="key">オンコール<br>待機</td>
+          <td>自由に過ごせる待機なら原則労働時間ではない。ただし飲酒禁止・◯分以内に出動・特定の場所に居ること等の拘束が常態化していれば労働時間と判断され得る</td>
+          <td>待機中の制約をどこまで課すか。課すほど「労働時間」に寄る</td>
+        </tr>
+        <tr>
+          <td class="key">オンコール<br>出動</td>
+          <td>実際に対応した時間は移動時間も含めて<strong>労働時間</strong>。深夜なら深夜割増が付く</td>
+          <td>「待機手当（1回◯円の定額）」と「出動分（実労働時間＋割増賃金）」を<strong>必ず分けて設計</strong>する。定額手当だけで済ませると未払いになる</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>割増率（2026年9月時点）</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>種類</th><th class="num">割増率</th><th>補足</th></tr></thead>
+      <tbody>
+        <tr><td class="key">時間外労働</td><td class="num">25% 以上</td><td>1日8時間／週40時間を超えた分</td></tr>
+        <tr><td class="key">時間外・月60時間超</td><td class="num">50% 以上</td><td>中小企業も2023年4月から適用</td></tr>
+        <tr><td class="key">深夜労働</td><td class="num">25% 以上</td><td>22時〜翌5時。時間外と重なれば合算（25+25＝50%）</td></tr>
+        <tr><td class="key">法定休日労働</td><td class="num">35% 以上</td><td>週1日の法定休日に働いた場合</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <p><strong>36協定の上限：</strong>原則は月45時間・年360時間。特別条項を付けても年720時間以内、複数月平均80時間以内、単月100時間未満、月45時間超は年6回までが上限です。オンコール出動が重なると、看護師1人あたりの時間外はあっという間に積み上がるので、2人目の採用前に体制を設計しておくのが現実的です。</p>
+  </div>
+
+  <p><strong>まとめると：</strong>勤怠システム（器）＋就業規則・賃金規程（ルール）の2点セットで初めて残業管理になります。就業規則は常時10人未満なら届出義務はありませんが、<strong>作っておかないと残業代の計算根拠が存在しない</strong>状態になります。社会保険労務士に一度だけ依頼して、オンコール条項を含む形で作るのが結果的に安く済みます。</p>
+</section>
+
+<!-- ============ 3 ============ -->
+<section>
+  <div class="sec-head">
+    <span class="sec-num">③</span>
+    <h2 class="sec-title">LINE WORKS ── 先輩の「フォルダ分け」は再現できる</h2>
+  </div>
+
+  <h3>まず用語の整理</h3>
+  <p>LINE WORKS に「フォルダ」という単一の機能があるわけではありません。先輩がやっているのは、おそらく次の組み合わせです。</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>機能</th><th>何のためのものか</th><th class="num">フリープラン</th></tr></thead>
+      <tbody>
+        <tr><td class="key">グループトーク</td><td>用途別にトークルームを分ける。「フォルダ分け」と呼ばれているものの正体はほぼこれ</td><td class="num yes">使える</td></tr>
+        <tr><td class="key">ノート</td><td>トークルーム内の固定ページ。流れていかないので手順書・連絡事項向き</td><td class="num yes">使える</td></tr>
+        <tr><td class="key">掲示板</td><td>全社向けのお知らせ</td><td class="num yes">10個まで</td></tr>
+        <tr><td class="key">カレンダー／タスク／アンケート</td><td>予定共有、依頼の割り当て、意向確認</td><td class="num yes">使える</td></tr>
+        <tr><td class="key">Drive</td><td>ファイル保管庫。指示書などの書類を置く場所</td><td class="num no">使えない</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="term">※Drive はアドバンストプランで標準、スタンダードプランは別途オプション購入。フリープランでは利用できません。</p>
+
+  <h3>有効か ── 有効です。ただし条件つき</h3>
+  <ul class="plain">
+    <li><strong>効くところ：</strong>既読が見える／スマホで即座に反応できる／緊急連絡が雑談に埋もれない／新人が過去のノートを読んで自習できる。何より「みんな使える」という導入障壁の低さは、他のツールでは買えない価値です。</li>
+    <li><strong>効かないところ：</strong>トークは情報が流れます。検索前提の道具なので、<strong>台帳や記録の置き場所としては不向き</strong>。ファイルの版管理（どれが最新の指示書か）も弱いです。</li>
+  </ul>
+
+  <div class="callout">
+    <span class="tag">最重要 / 利用者情報の扱い</span>
+    <p>利用者の氏名・住所・病名や、指示書のPDF・写真を<strong>トークに直接流さない</strong>設計にしてください。理由は3つ。①退職したスタッフの端末やトーク履歴に情報が残る、②送信先のグループを間違えたときに取り返しがつかない、③医療情報の安全管理に関する国のガイドライン（いわゆる3省2ガイドライン）の考え方に照らして説明がつかない。</p>
+    <p style="margin-top:10px"><strong>運用ルール：</strong>トークでは「Aさん（ID:1234）」のようにイニシャル＋利用者IDで呼ぶ。実データは訪問看護記録システム、またはアクセス権を設定したクラウドストレージに置き、トークにはその<strong>リンクだけ</strong>を貼る。これだけで事故の大半は防げます。</p>
+  </div>
+
+  <h3>トークルーム構成の雛形</h3>
+  <p>数は増やしすぎないこと。7つ程度が上限で、それを超えると誰も見なくなります。</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>ルーム</th><th>用途</th><th class="num">通知</th><th>ルール</th></tr></thead>
+      <tbody>
+        <tr><td class="key">01 全体連絡</td><td>全員向けのお知らせ</td><td class="num">ON</td><td>経営者からの一方向。返信は絵文字リアクションのみ</td></tr>
+        <tr><td class="key">02 新規依頼</td><td>ケアマネ・病院からの新規相談</td><td class="num">ON</td><td>受付テンプレで投稿。担当が決まったらノートに転記して確定</td></tr>
+        <tr><td class="key">03 緊急・オンコール</td><td>急変、当日のキャンセル・変更</td><td class="num">最優先</td><td>緊急以外は書かない。書かれたら必ず誰かが「対応します」と返す</td></tr>
+        <tr><td class="key">04 指示書・書類</td><td>指示書の受領と有効期限の管理</td><td class="num">OFF</td><td>実物は貼らない。管理台帳のリンクと期限だけを扱う</td></tr>
+        <tr><td class="key">05 申し送り</td><td>訪問後の共有</td><td class="num">OFF</td><td>記録システムに書いた上で、要点のみ</td></tr>
+        <tr><td class="key">06 シフト・勤怠</td><td>休み希望、打刻忘れの申告</td><td class="num">OFF</td><td>決定事項はカレンダーが正。トークの発言は申請でしかない</td></tr>
+        <tr><td class="key">07 相談・ヒヤリハット</td><td>雑談、判断に迷ったこと</td><td class="num">OFF</td><td>ここだけは自由に。心理的安全性のための場所</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>ノートに置くもの（流したくない情報）</h3>
+  <ul class="plain">
+    <li>緊急時の連絡フロー（誰に連絡し、繋がらなければ次に誰か）</li>
+    <li>訪問時の持ち物チェックリスト、感染対策の手順</li>
+    <li>新人が最初の1週間で読むもの一覧（オンボーディング）</li>
+    <li>各種システムのログイン手順（※パスワード本体は書かない）</li>
+  </ul>
+
+  <h3>フリープランのままで足りるか</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>項目</th><th>フリー</th><th>スタンダード</th><th>アドバンスト</th></tr></thead>
+      <tbody>
+        <tr><td class="key">料金（1人・月／年額契約）</td><td class="num">0円</td><td class="num">450円</td><td class="num">800円</td></tr>
+        <tr><td class="key">ユーザー数</td><td class="num">30名まで</td><td class="num">上限なし</td><td class="num">上限なし</td></tr>
+        <tr><td class="key">共有ストレージ</td><td class="num">5GB（追加不可）</td><td class="num">1TB</td><td class="num">100TB</td></tr>
+        <tr><td class="key">Drive</td><td class="num no">なし</td><td class="num">オプション</td><td class="num yes">標準</td></tr>
+        <tr><td class="key">掲示板</td><td class="num">10個まで</td><td class="num">制限なし</td><td class="num">制限なし</td></tr>
+        <tr><td class="key">複数人通話</td><td class="num">4名・60分まで</td><td class="num">200名</td><td class="num">200名</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>判断：</strong>人数の面では当分フリーで足ります。ただし<strong>Driveが使えない</strong>のが効いてきます。書類の置き場所として Google Workspace などを別に用意するか、スタッフが3〜4名になった時点でスタンダード（1人450円／月・年額）に移るか、どちらかを選ぶことになります。医療情報を扱う事業所として、監査ログや端末管理といった管理機能が必要になる点も踏まえると、<strong>採用のタイミングで有料化</strong>が現実的です。</p>
+  <div class="note">
+    <p>なお、フリープランは2023年10月に上限が100名から30名へ引き下げられた経緯があります。<strong>無料であることを前提に業務設計をしすぎない</strong>のが安全です（料金・仕様は2026年9月時点。導入前に公式サイトでご確認を）。</p>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section>
+  <div class="sec-head">
+    <span class="sec-num">④</span>
+    <h2 class="sec-title">その他 ── 着手すべき順番</h2>
+  </div>
+
+  <div class="phase">
+    <div class="phase-hd"><span class="phase-when">今月</span><span class="cap">法的リスクを止める</span></div>
+    <ol class="steps">
+      <li><span><span class="t">クラウド勤怠を1つ導入し、まず自分で1か月打刻する</span><span class="d">無料枠で十分。運用の粗を潰してからスタッフに展開する</span></span></li>
+      <li><span><span class="t">就業規則・賃金規程を作る（オンコール条項を含めて）</span><span class="d">10人未満は届出義務なし。それでも作らないと残業代の計算根拠が存在しない。社労士に一度依頼するのが結局安い</span></span></li>
+      <li><span><span class="t">36協定の準備</span><span class="d">残業やオンコール出動が発生する前に。所轄の労働基準監督署へ届出</span></span></li>
+    </ol>
+  </div>
+
+  <div class="phase">
+    <div class="phase-hd later"><span class="phase-when">3か月以内</span><span class="cap">情報の置き場所を決める</span></div>
+    <ol class="steps">
+      <li><span><span class="t">「どの情報をどこに置くか」を1枚に書き出す</span><span class="d">利用者情報＝記録システム／社内ルール＝LINE WORKSのノート／書類＝クラウドストレージ。二重管理をやめるのが目的</span></span></li>
+      <li><span><span class="t">訪問看護記録システムの見直し</span><span class="d">レセプト連携と勤怠連携まで見て選ぶ。ここが決まらないと③の運用ルールが宙に浮く</span></span></li>
+      <li><span><span class="t">個人情報保護規程とスタッフの誓約書、退職時の手順</span><span class="d">退職時にアカウントを止め、端末からデータを消す手順まで文書にしておく</span></span></li>
+    </ol>
+  </div>
+
+  <div class="phase">
+    <div class="phase-hd later"><span class="phase-when">2人目の採用前</span><span class="cap">受け入れる側の準備</span></div>
+    <ol class="steps">
+      <li><span><span class="t">労働条件通知書・雇用契約書のテンプレート</span><span class="d">オンコールの回数と手当額を明記する</span></span></li>
+      <li><span><span class="t">給与計算のフローを決める</span><span class="d">勤怠システム → 給与ソフト → 振込。手作業の転記が挟まると必ず事故る</span></span></li>
+      <li><span><span class="t">オンコールの分担ルールを先に決めておく</span><span class="d">「2人になったらこうする」を1人のうちに決める。入職後に交渉すると必ず揉める</span></span></li>
+      <li><span><span class="t">オンボーディング資料をLINE WORKSのノートに集約</span><span class="d">最初の1週間で読むものを揃えておくだけで、教える時間が半分になる</span></span></li>
+    </ol>
+  </div>
+
+  <div class="callout">
+    <span class="tag">見落としやすい点</span>
+    <p>経営者自身が看護師として訪問しているなら、<strong>自分の労働時間も記録</strong>してください。労災の認定や、実地指導・監査への対応で効いてきます。また「スタッフ1人＝就業規則の届出義務なし」は事実ですが、それは「作らなくていい」という意味ではありません。義務がないうちに作れるのは、むしろ有利な条件です。</p>
+  </div>
+</section>
+
+<footer>
+  <h2>参照</h2>
+  <ul>
+    <li><a href="https://help.worksmobile.com/ja/faqs/services/line-works/free-plan/faq/difference-between-free-plan-and-paid-plan/">LINE WORKS ヘルプ｜フリープランと有償プランの違い</a></li>
+    <li><a href="https://line-works.com/pricing/">LINE WORKS｜利用料金</a></li>
+    <li><a href="https://www.wowtalk.jp/blog/lineworks-specification-change-freeplan-20231005.html">LINE WORKS フリープランの仕様変更（100名→30名）の解説</a></li>
+    <li><a href="https://uenishi-sr.jp/20251027-2/">労働時間の状況の把握義務と把握方法（労働安全衛生法）</a></li>
+    <li><a href="https://romsearch.officestation.jp/jinjiroumu/shugyoukisoku/6545">労働時間の把握義務・管理方法・罰則</a></li>
+    <li><a href="https://usg-syoshi25.com/blog/houmonkaigo-oncall/">【社労士監修】オンコール待機中は労働時間か</a></li>
+    <li><a href="https://www.freee.co.jp/kb/kb-management/on-call/">オンコール勤務と手当の考え方</a></li>
+  </ul>
+  <p class="disclaimer">本メモは一般的な情報の整理であり、個別の労務判断・法的助言ではありません。就業規則、36協定、オンコール手当の設計については、実際の運用実態をもとに社会保険労務士へご確認ください。料金・プラン仕様は2026年9月時点のものです。</p>
+</footer>
+
+</div>
