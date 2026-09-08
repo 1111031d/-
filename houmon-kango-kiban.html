@@ -84,6 +84,8 @@ h2.sec-title{font-family:var(--serif);font-size:clamp(20px,3.4vw,25px);font-weig
 h3{font-family:var(--sans);font-size:16px;font-weight:700;margin:34px 0 12px;letter-spacing:.01em;display:flex;align-items:center;gap:9px}
 h3::before{content:"";width:7px;height:7px;background:var(--accent);border-radius:1px;flex-shrink:0}
 h3:first-of-type{margin-top:0}
+h4.sub{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.08em;color:var(--ink-2);margin:26px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--rule)}
+td .term{display:block;margin-top:3px}
 p{max-width:66ch;margin-bottom:14px}
 p:last-child{margin-bottom:0}
 strong{font-weight:700}
@@ -145,12 +147,13 @@ footer a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
     <span>スタッフ 1 名</span>
     <span>勤怠記録 なし</span>
     <span>LINE WORKS フリープラン</span>
+    <span>会計 マネーフォワード</span>
   </div>
 </header>
 
 <div class="summary">
   <h2>結論</h2>
-  <p><b>① 勤怠は今月から始める。</b>「1人だからまだいい」は逆です。記録は後から遡って作れず、法律上は今すでに義務が発生しています。無料〜数百円のクラウド勤怠で十分。</p>
+  <p><b>① 勤怠は今月から始める。</b>「1人だからまだいい」は逆です。記録は後から遡って作れず、法律上は今すでに義務が発生しています。すでにマネーフォワードを使っているなら、クラウド勤怠はプラン内で追加費用ゼロの可能性が高いです。</p>
   <p><b>② 残業管理は勤怠システムだけでは回りません。</b>「移動時間」「記録を書く時間」「オンコール待機」を労働時間として数えるかどうかを先に決める必要があります。ここが訪問看護で一番もめる場所です。</p>
   <p><b>③ 先輩のLINE WORKS運用は再現できるし、有効です。</b>ただし利用者の氏名や指示書そのものをトークに流さない設計が前提。フリープランにはファイル保管庫（Drive）が無いので、書類は別の置き場所が要ります。</p>
 </div>
@@ -199,7 +202,67 @@ footer a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
       </tbody>
     </table>
   </div>
-  <p>おすすめの進め方は<strong>「今月、無料枠のクラウド勤怠を1つ入れて、まず経営者自身が1か月打刻してみる」</strong>。1人で回して運用の粗を潰してから、2人目に展開すれば説明コストがほぼゼロになります。経営者自身が訪問に出ているなら、その時間も記録対象です（労災や監査の際の証拠になります）。</p>
+  <p>おすすめの進め方は<strong>「今月1つ入れて、まず経営者自身が1か月打刻してみる」</strong>。1人で回して運用の粗を潰してから2人目に展開すれば、説明コストがほぼゼロになります。経営者自身が訪問に出ているなら、その時間も記録対象です（労災や監査の際の証拠になります）。</p>
+
+  <h3>すでにマネーフォワードを使っているなら</h3>
+  <p><strong>結論：マネーフォワード クラウド勤怠で始めるのが一番ラクです。</strong>弱点は1つだけあります（後述）。</p>
+
+  <h4 class="sub">費用 ── おそらく追加ゼロ</h4>
+  <p>マネーフォワード クラウドの法人プランは、勤怠を含む全製品が使えます。会計で契約済みなら<strong>有効化するだけ</strong>の可能性が高いので、まず現在のプランと人数枠をご確認ください。</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>プラン</th><th class="num">人数枠</th><th class="num">勤怠</th></tr></thead>
+      <tbody>
+        <tr><td class="key">ひとり法人</td><td class="num">1名</td><td class="num yes">含まれる</td></tr>
+        <tr><td class="key">スモールビジネス</td><td class="num">3名まで</td><td class="num yes">含まれる</td></tr>
+        <tr><td class="key">ビジネス</td><td class="num">5名まで<span class="term">（6人目から +300円/人・月）</span></td><td class="num yes">含まれる</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4 class="sub">手間 ── 初期設定2〜3時間、あとは月30分</h4>
+  <div class="tw">
+    <table>
+      <thead><tr><th>いつ</th><th>やること</th><th class="num">目安</th></tr></thead>
+      <tbody>
+        <tr><td class="key" rowspan="6">初期設定<br><span class="term">（1回だけ）</span></td><td>事業所情報・締め日の設定</td><td class="num">15分</td></tr>
+        <tr><td><strong>勤務体系の設定</strong>（所定労働時間・休憩・残業の起点）<br><span class="term">ここだけ頭を使う。②の「移動時間・記録作成時間をどう数えるか」を先に決めないと手が止まります</span></td><td class="num">60分</td></tr>
+        <tr><td>従業員の登録と招待メール</td><td class="num">10分/人</td></tr>
+        <tr><td>GPS打刻をONにする</td><td class="num">10分</td></tr>
+        <tr><td>有給休暇の設定</td><td class="num">20分</td></tr>
+        <tr><td>クラウド給与との連携設定</td><td class="num">30分</td></tr>
+        <tr><td class="key">毎日</td><td>スタッフ：アプリで「出勤」「退勤」をタップ</td><td class="num">1日2回</td></tr>
+        <tr><td class="key">毎月末</td><td>締め → 打刻漏れのエラー表示を確認 → 承認 → 給与へ反映</td><td class="num">30分</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>給与計算まで自動で繋がる</strong>のがマネーフォワード最大の利点です。他社の勤怠だと毎月CSVを書き出して給与に取り込む作業が発生するので、経営者側の手間はここで明確に差がつきます。</p>
+
+  <h4 class="sub">弱点 ── LINE WORKSからの打刻ができない</h4>
+  <p>ジョブカン勤怠やKING OF TIMEは、<strong>LINE WORKSのトーク画面に出る「出勤」「退勤」ボタンをタップするだけで打刻</strong>でき、さらにBotが打刻時刻の前後に通知を出して打刻忘れを防ぎます。③でLINE WORKSを主流にする以上、「毎日開くアプリの中に打刻ボタンがある」のは抜け防止としてかなり強い仕組みです。マネーフォワード クラウド勤怠にはこの連携がありません（上位版の「クラウド勤怠Plus」はLINE打刻に対応していますが別料金のため要問い合わせ）。</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>比較軸</th><th>マネーフォワード クラウド勤怠</th><th>ジョブカン勤怠 / KING OF TIME</th></tr></thead>
+      <tbody>
+        <tr><td class="key">追加費用</td><td class="yes">プラン内。実質0円の可能性が高い</td><td>1人あたり月200〜300円程度</td></tr>
+        <tr><td class="key">給与計算との連携</td><td class="yes">自動連携（同じマネーフォワード内）</td><td>CSVの書き出し・取り込みが毎月発生</td></tr>
+        <tr><td class="key">直行直帰の打刻</td><td>スマホアプリ＋GPS打刻</td><td>スマホアプリ＋GPS打刻</td></tr>
+        <tr><td class="key">LINE WORKSから打刻</td><td class="no">できない</td><td class="yes">できる（Botの打刻忘れ通知つき）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <p><strong>判断：</strong>今はマネーフォワード クラウド勤怠で始める。追加費用ゼロ・給与まで一気通貫で、スタッフ1名なら打刻忘れは声かけで足ります。乗り換えを検討するのは<strong>「スタッフが3名を超えて、実際に打刻忘れが月に何度も起きるようになったとき」</strong>。そのときに初めて比較すれば十分間に合います。</p>
+  </div>
+
+  <h3>抜けをなくすのは、システムより運用</h3>
+  <ul class="plain">
+    <li><strong>訪問手順に組み込む。</strong>「1件目の前に打刻」を持ち物チェックリストと同じ場所に書く。既にある習慣に紐づけると忘れません。</li>
+    <li><strong>確認する曜日を決める。</strong>毎週月曜に前週分のエラー表示をチェック。月末にまとめて見ると、本人の記憶が消えていて正しく修正できません。</li>
+    <li><strong>打刻の修正は必ず申請→承認。</strong>本人が自由に書き換えられる状態だと、せっかくの客観的記録の証拠力が落ちます。</li>
+    <li><strong>GPS打刻は事前に説明して同意を取る。</strong>黙って入れると監視されている感が出て、定着しません。「直行直帰の労働時間を正しく払うため」と目的を伝えるだけで受け止め方が変わります。</li>
+  </ul>
 </section>
 
 <!-- ============ 2 ============ -->
@@ -387,6 +450,11 @@ footer a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
     <li><a href="https://help.worksmobile.com/ja/faqs/services/line-works/free-plan/faq/difference-between-free-plan-and-paid-plan/">LINE WORKS ヘルプ｜フリープランと有償プランの違い</a></li>
     <li><a href="https://line-works.com/pricing/">LINE WORKS｜利用料金</a></li>
     <li><a href="https://www.wowtalk.jp/blog/lineworks-specification-change-freeplan-20231005.html">LINE WORKS フリープランの仕様変更（100名→30名）の解説</a></li>
+    <li><a href="https://biz.moneyforward.com/price/detail/">マネーフォワード クラウド｜プラン比較表</a></li>
+    <li><a href="https://biz.moneyforward.com/attendance/function/recorder/">マネーフォワード クラウド勤怠｜打刻方法</a></li>
+    <li><a href="https://biz.moneyforward.com/support/attendance/guide/timestamp/gps01.html">マネーフォワード クラウド勤怠｜GPS打刻について</a></li>
+    <li><a href="https://jpn.nec.com/king-of-time/lineworks.html">KING OF TIME（勤革時）｜LINE WORKS 打刻連携</a></li>
+    <li><a href="https://saas.imitsu.jp/cate-attendance-management/article/l-1032">LINE・LINE WORKS対応の勤怠管理システム比較</a></li>
     <li><a href="https://uenishi-sr.jp/20251027-2/">労働時間の状況の把握義務と把握方法（労働安全衛生法）</a></li>
     <li><a href="https://romsearch.officestation.jp/jinjiroumu/shugyoukisoku/6545">労働時間の把握義務・管理方法・罰則</a></li>
     <li><a href="https://usg-syoshi25.com/blog/houmonkaigo-oncall/">【社労士監修】オンコール待機中は労働時間か</a></li>
