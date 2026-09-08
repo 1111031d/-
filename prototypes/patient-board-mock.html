@@ -1,0 +1,490 @@
+<title>訪問看護 書類提出ボード</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#f5f7f5; --surface:#ffffff; --surface-2:#eaefec; --surface-3:#f0f4f1;
+  --line:#d6ded8; --line-strong:#b8c4bd;
+  --ink:#16211d; --ink-2:#5c6b64; --ink-3:#84948c;
+  --accent:#1b6b60; --accent-ink:#ffffff; --accent-soft:#e0efec;
+  --ok:#2f7d46; --ok-soft:#e4f1e7;
+  --warn:#9d6404; --warn-soft:#fbeeda;
+  --crit:#a52f2f; --crit-soft:#fbe6e4;
+  --shadow:0 1px 2px rgba(22,33,29,.06),0 1px 8px rgba(22,33,29,.04);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111614; --surface:#19201d; --surface-2:#222b27; --surface-3:#1e2622;
+    --line:#2d3833; --line-strong:#3d4a44;
+    --ink:#e5ebe8; --ink-2:#9aa8a2; --ink-3:#7b8983;
+    --accent:#54bdae; --accent-ink:#0d1917; --accent-soft:#16332e;
+    --ok:#6dc287; --ok-soft:#16301f;
+    --warn:#d9a442; --warn-soft:#332714;
+    --crit:#e18b86; --crit-soft:#341c1b;
+    --shadow:0 1px 2px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111614; --surface:#19201d; --surface-2:#222b27; --surface-3:#1e2622;
+  --line:#2d3833; --line-strong:#3d4a44;
+  --ink:#e5ebe8; --ink-2:#9aa8a2; --ink-3:#7b8983;
+  --accent:#54bdae; --accent-ink:#0d1917; --accent-soft:#16332e;
+  --ok:#6dc287; --ok-soft:#16301f;
+  --warn:#d9a442; --warn-soft:#332714;
+  --crit:#e18b86; --crit-soft:#341c1b;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Noto Sans JP",-apple-system,"Hiragino Sans",sans-serif;
+  font-size:14px; line-height:1.7;
+}
+.num{font-family:"Roboto Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums}
+
+/* ---- ヘッダー ---- */
+.topbar{
+  background:var(--surface); border-bottom:1px solid var(--line);
+  padding:14px 24px; display:flex; align-items:center; gap:20px; flex-wrap:wrap;
+  position:sticky; top:0; z-index:20;
+}
+.brand{display:flex; align-items:baseline; gap:10px; margin-right:auto}
+.brand h1{font-size:17px; font-weight:700; margin:0; letter-spacing:.02em}
+.brand .sub{font-size:11px; color:var(--ink-2); letter-spacing:.06em}
+.mockflag{
+  font-size:11px; font-weight:500; color:var(--warn);
+  background:var(--warn-soft); border:1px solid color-mix(in srgb,var(--warn) 30%,transparent);
+  padding:3px 9px; border-radius:3px; white-space:nowrap;
+}
+.monthpick{display:flex; align-items:center; gap:8px}
+.monthpick label{font-size:12px; color:var(--ink-2)}
+select,input[type=search],input[type=text]{
+  font-family:inherit; font-size:13px; color:var(--ink);
+  background:var(--surface); border:1px solid var(--line-strong);
+  border-radius:4px; padding:6px 9px; outline:none;
+}
+select:focus-visible,input:focus-visible,button:focus-visible{
+  outline:2px solid var(--accent); outline-offset:1px;
+}
+
+/* ---- タブ ---- */
+.tabs{display:flex; gap:2px; background:var(--surface); padding:0 24px; border-bottom:1px solid var(--line)}
+.tab{
+  font-family:inherit; font-size:13px; font-weight:500; color:var(--ink-2);
+  background:none; border:none; border-bottom:2px solid transparent;
+  padding:10px 16px; cursor:pointer; white-space:nowrap;
+}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--accent); border-bottom-color:var(--accent); font-weight:700}
+
+.wrap{max-width:1280px; margin:0 auto; padding:20px 24px 60px}
+.panel[hidden]{display:none}
+
+/* ---- サマリ ---- */
+.summary{display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:1px;
+  background:var(--line); border:1px solid var(--line); border-radius:6px; overflow:hidden; margin-bottom:20px}
+.stat{background:var(--surface); padding:12px 14px 13px; position:relative}
+.stat .k{font-size:11px; color:var(--ink-2); letter-spacing:.04em; display:block}
+.stat .v{font-size:26px; font-weight:500; line-height:1.2; display:block; margin-top:2px}
+.stat .u{font-size:11px; color:var(--ink-2); margin-left:3px; font-family:"Noto Sans JP",sans-serif}
+.stat.alert{background:var(--surface)}
+.stat.alert::before{content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--warn)}
+.stat.alert .v{color:var(--warn)}
+.stat.danger::before{background:var(--crit)}
+.stat.danger .v{color:var(--crit)}
+.stat.quiet .v{color:var(--ink)}
+
+/* ---- フィルタ ---- */
+.filters{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:14px}
+.chip{
+  font-family:inherit; font-size:12px; font-weight:500; color:var(--ink-2);
+  background:var(--surface); border:1px solid var(--line-strong);
+  border-radius:14px; padding:5px 13px; cursor:pointer;
+}
+.chip:hover{border-color:var(--accent); color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+.spacer{margin-left:auto}
+.count-note{font-size:12px; color:var(--ink-2)}
+
+/* ---- 表 ---- */
+.tablewrap{overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:6px; box-shadow:var(--shadow)}
+table{border-collapse:collapse; width:100%; min-width:940px}
+thead th{
+  font-size:11px; font-weight:500; color:var(--ink-2); letter-spacing:.05em; text-align:left;
+  background:var(--surface-3); border-bottom:1px solid var(--line);
+  padding:9px 12px; white-space:nowrap; position:sticky; top:0;
+}
+tbody td{border-bottom:1px solid var(--line); padding:9px 12px; vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--surface-3)}
+tbody tr.has-todo td:first-child{box-shadow:inset 3px 0 0 var(--warn)}
+.pname{font-weight:500; white-space:nowrap}
+.pkana{font-size:11px; color:var(--ink-2); display:block; line-height:1.3}
+.muted{color:var(--ink-2)}
+.center{text-align:center}
+.nowrap{white-space:nowrap}
+
+/* ---- 状態バッジ・ボタン ---- */
+.tag{font-size:11px; font-weight:500; padding:2px 7px; border-radius:3px; white-space:nowrap; display:inline-block}
+.tag.kaigo{background:var(--accent-soft); color:var(--accent)}
+.tag.iryo{background:var(--surface-2); color:var(--ink-2)}
+.tag.ok{background:var(--ok-soft); color:var(--ok)}
+.tag.warn{background:var(--warn-soft); color:var(--warn)}
+.tag.crit{background:var(--crit-soft); color:var(--crit)}
+
+.mark{
+  font-family:inherit; font-size:12px; font-weight:500; cursor:pointer;
+  border-radius:4px; padding:4px 12px; min-width:64px; transition:background .12s,border-color .12s;
+}
+.mark.done{background:var(--ok-soft); border:1px solid color-mix(in srgb,var(--ok) 35%,transparent); color:var(--ok)}
+.mark.todo{background:var(--warn-soft); border:1px solid color-mix(in srgb,var(--warn) 40%,transparent); color:var(--warn)}
+.mark:hover{border-color:currentColor}
+.mark .dt{font-size:10px; opacity:.75; margin-left:4px; font-family:"Roboto Mono",monospace}
+.na{color:var(--ink-3); font-size:12px}
+
+.empty{padding:44px 20px; text-align:center; color:var(--ink-2); font-size:13px}
+.footnote{margin-top:16px; font-size:12px; color:var(--ink-2); line-height:1.8}
+.footnote strong{color:var(--ink); font-weight:500}
+h2.sec{font-size:14px; font-weight:700; margin:0 0 4px; letter-spacing:.02em}
+p.seclead{font-size:12px; color:var(--ink-2); margin:0 0 14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="topbar">
+  <div class="brand">
+    <h1>訪問看護 書類提出ボード</h1>
+    <span class="sub">〇〇訪問看護ステーション</span>
+  </div>
+  <span class="mockflag">ダミーデータの試作品です</span>
+  <div class="monthpick">
+    <label for="month">対象月</label>
+    <select id="month"></select>
+  </div>
+</div>
+
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" id="tab-board" aria-selected="true" aria-controls="panel-board">今月のボード</button>
+  <button class="tab" role="tab" id="tab-list" aria-selected="false" aria-controls="panel-list">利用者一覧・検索</button>
+  <button class="tab" role="tab" id="tab-keiyaku" aria-selected="false" aria-controls="panel-keiyaku">契約書類チェック</button>
+</div>
+
+<div class="wrap">
+
+  <!-- ===== 今月のボード ===== -->
+  <section class="panel" id="panel-board" role="tabpanel" aria-labelledby="tab-board">
+    <div class="summary" id="summary"></div>
+    <div class="filters">
+      <button class="chip" id="f-todo" aria-pressed="false">未提出だけ表示</button>
+      <select id="f-ns"><option value="">担当NS：すべて</option></select>
+      <select id="f-hoken">
+        <option value="">保険：すべて</option>
+        <option value="介護">介護保険</option>
+        <option value="医療">医療保険</option>
+      </select>
+      <input type="search" id="f-q" placeholder="利用者名・かなで検索" style="width:200px">
+      <span class="spacer count-note" id="board-count"></span>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr>
+          <th>利用者</th><th>保険</th><th>担当NS</th>
+          <th class="center">計画書</th><th class="center">報告書</th><th class="center">実績（ケアマネ）</th>
+          <th>指示書の期限</th>
+        </tr></thead>
+        <tbody id="board-body"></tbody>
+      </table>
+    </div>
+    <p class="footnote">
+      <strong>使い方：</strong>「未」を押すと「済」になり、押した日付が入ります。もう一度押すと戻ります。<br>
+      <strong>実績</strong>は介護保険の利用者のみ対象です。医療保険の方は「―」と表示されます。<br>
+      <strong>指示書</strong>は期限まで30日を切ると黄色、期限切れは赤で出ます。
+    </p>
+  </section>
+
+  <!-- ===== 利用者一覧 ===== -->
+  <section class="panel" id="panel-list" role="tabpanel" aria-labelledby="tab-list" hidden>
+    <h2 class="sec">利用者一覧・検索</h2>
+    <p class="seclead">医療機関やケアマネから連絡が来たときに、担当者をすぐ探すための画面です。</p>
+    <div class="filters">
+      <input type="search" id="l-q" placeholder="氏名・かな・医療機関・ケアマネで検索" style="width:280px">
+      <select id="l-hospital"><option value="">医療機関：すべて</option></select>
+      <select id="l-kyotaku"><option value="">居宅事業所：すべて</option></select>
+      <select id="l-status">
+        <option value="利用中">利用状況：利用中</option>
+        <option value="">すべて</option>
+        <option value="中止">中止</option>
+        <option value="終了">終了</option>
+      </select>
+      <span class="spacer count-note" id="list-count"></span>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr>
+          <th>利用者</th><th>保険</th><th>状況</th><th>担当NS</th>
+          <th>医療機関</th><th>主治医</th><th>居宅事業所</th><th>ケアマネ</th>
+        </tr></thead>
+        <tbody id="list-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== 契約書類 ===== -->
+  <section class="panel" id="panel-keiyaku" role="tabpanel" aria-labelledby="tab-keiyaku" hidden>
+    <h2 class="sec">契約書類チェック</h2>
+    <p class="seclead">初回にだけ必要な書類です。揃っているかを確認します。</p>
+    <div class="filters">
+      <button class="chip" id="k-todo" aria-pressed="true">揃っていない人だけ表示</button>
+      <span class="spacer count-note" id="k-count"></span>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr>
+          <th>利用者</th><th>利用開始日</th>
+          <th class="center">契約書</th><th class="center">重要事項説明書</th><th class="center">個人情報同意書</th>
+        </tr></thead>
+        <tbody id="k-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ====== ダミーデータ ====== */
+const TODAY = new Date();
+const pad = n => String(n).padStart(2,'0');
+const ymKey = d => d.getFullYear()+'-'+pad(d.getMonth()+1);
+const fmtMD = d => (d.getMonth()+1)+'/'+d.getDate();
+const fmtYMD = d => d.getFullYear()+'/'+pad(d.getMonth()+1)+'/'+pad(d.getDate());
+const shift = (base,months) => { const d=new Date(base); d.setDate(1); d.setMonth(d.getMonth()+months); return d; };
+const addDays = (base,n) => { const d=new Date(base); d.setDate(d.getDate()+n); return d; };
+
+// cur = [計画書, 報告書, 実績] の当月の状態
+const patients = [
+  {id:1, name:'青木 スミ',   kana:'あおき すみ',     hoken:'介護', status:'利用中', startOff:-820, ns:'佐藤 美和', hospital:'湘南中央病院',   doctor:'村井 誠',  kyotaku:'ケアプラン湘南',   cm:'大野 直子', shiji:18,  keiyaku:[1,1,1], cur:[1,0,0]},
+  {id:2, name:'井田 幸吉',   kana:'いだ こうきち',   hoken:'医療', status:'利用中', startOff:-140, ns:'鈴木 京子', hospital:'藤沢クリニック', doctor:'橋本 拓也',kyotaku:'―',              cm:'―',        shiji:64,  keiyaku:[1,1,1], cur:[1,1,0]},
+  {id:3, name:'内海 テル',   kana:'うつみ てる',     hoken:'介護', status:'利用中', startOff:-410, ns:'佐藤 美和', hospital:'湘南中央病院',   doctor:'村井 誠',  kyotaku:'居宅みなと',       cm:'谷口 亮',   shiji:-4,  keiyaku:[1,1,1], cur:[0,0,0]},
+  {id:4, name:'遠藤 マサ',   kana:'えんどう まさ',   hoken:'介護', status:'利用中', startOff:-58,  ns:'高橋 直人', hospital:'茅ヶ崎北病院',   doctor:'新井 恵子',kyotaku:'ケアプラン湘南',   cm:'大野 直子', shiji:92,  keiyaku:[1,1,0], cur:[1,1,1]},
+  {id:5, name:'大久保 隆',   kana:'おおくぼ たかし', hoken:'医療', status:'利用中', startOff:-230, ns:'伊藤 綾',   hospital:'藤沢クリニック', doctor:'橋本 拓也',kyotaku:'―',              cm:'―',        shiji:27,  keiyaku:[1,1,1], cur:[1,0,0]},
+  {id:6, name:'柏木 ヨシ',   kana:'かしわぎ よし',   hoken:'介護', status:'利用中', startOff:-990, ns:'鈴木 京子', hospital:'湘南中央病院',   doctor:'園田 昌',  kyotaku:'居宅みなと',       cm:'谷口 亮',   shiji:145, keiyaku:[1,1,1], cur:[1,1,1]},
+  {id:7, name:'木村 サダ',   kana:'きむら さだ',     hoken:'介護', status:'利用中', startOff:-320, ns:'渡辺 恵',   hospital:'大和記念病院',   doctor:'岸 由紀',  kyotaku:'ケアサポート辻堂', cm:'南 洋平',   shiji:8,   keiyaku:[1,1,1], cur:[1,1,0]},
+  {id:8, name:'小林 芳一',   kana:'こばやし よしかず',hoken:'介護',status:'利用中', startOff:-77,  ns:'高橋 直人', hospital:'茅ヶ崎北病院',   doctor:'新井 恵子',kyotaku:'居宅みなと',       cm:'谷口 亮',   shiji:51,  keiyaku:[1,0,1], cur:[0,0,0]},
+  {id:9, name:'斉藤 ハル',   kana:'さいとう はる',   hoken:'介護', status:'利用中', startOff:-604, ns:'佐藤 美和', hospital:'大和記念病院',   doctor:'岸 由紀',  kyotaku:'ケアサポート辻堂', cm:'南 洋平',   shiji:113, keiyaku:[1,1,1], cur:[1,1,1]},
+  {id:10,name:'鈴木 トミ',   kana:'すずき とみ',     hoken:'医療', status:'利用中', startOff:-45,  ns:'伊藤 綾',   hospital:'湘南中央病院',   doctor:'園田 昌',  kyotaku:'―',              cm:'―',        shiji:-19, keiyaku:[1,1,1], cur:[0,0,0]},
+  {id:11,name:'田村 きよ',   kana:'たむら きよ',     hoken:'介護', status:'利用中', startOff:-1180,ns:'渡辺 恵',   hospital:'藤沢クリニック', doctor:'橋本 拓也',kyotaku:'ケアプラン湘南',   cm:'大野 直子', shiji:73,  keiyaku:[1,1,1], cur:[1,1,1]},
+  {id:12,name:'土井 健三',   kana:'どい けんぞう',   hoken:'介護', status:'利用中', startOff:-260, ns:'鈴木 京子', hospital:'大和記念病院',   doctor:'岸 由紀',  kyotaku:'居宅みなと',       cm:'谷口 亮',   shiji:22,  keiyaku:[0,0,1], cur:[1,0,1]},
+  {id:13,name:'中野 ふみ',   kana:'なかの ふみ',     hoken:'介護', status:'利用中', startOff:-505, ns:'高橋 直人', hospital:'茅ヶ崎北病院',   doctor:'新井 恵子',kyotaku:'ケアサポート辻堂', cm:'南 洋平',   shiji:38,  keiyaku:[1,1,1], cur:[1,1,1]},
+  {id:14,name:'橋詰 幸子',   kana:'はしづめ さちこ', hoken:'医療', status:'利用中', startOff:-19,  ns:'伊藤 綾',   hospital:'湘南中央病院',   doctor:'村井 誠',  kyotaku:'―',              cm:'―',        shiji:11,  keiyaku:[1,1,0], cur:[0,1,0]},
+  {id:15,name:'福島 とし',   kana:'ふくしま とし',   hoken:'介護', status:'利用中', startOff:-733, ns:'佐藤 美和', hospital:'大和記念病院',   doctor:'岸 由紀',  kyotaku:'ケアプラン湘南',   cm:'大野 直子', shiji:159, keiyaku:[1,1,1], cur:[1,1,1]},
+  {id:16,name:'松原 一夫',   kana:'まつばら かずお', hoken:'介護', status:'中止',   startOff:-380, ns:'渡辺 恵',   hospital:'茅ヶ崎北病院',   doctor:'新井 恵子',kyotaku:'居宅みなと',       cm:'谷口 亮',   shiji:5,   keiyaku:[1,1,1], cur:[0,0,0]},
+  {id:17,name:'安田 みつ',   kana:'やすだ みつ',     hoken:'介護', status:'終了',   startOff:-1400,ns:'鈴木 京子', hospital:'湘南中央病院',   doctor:'園田 昌',  kyotaku:'ケアサポート辻堂', cm:'南 洋平',   shiji:-70, keiyaku:[1,1,1], cur:[0,0,0]},
+];
+
+/* 対象月：当月と過去2ヶ月 */
+const months = [shift(TODAY,-2), shift(TODAY,-1), shift(TODAY,0)].map(ymKey);
+const CUR = months[2];
+
+/* 月次の提出状況を組み立てる（過去月は済み扱い、当月はダミーの初期状態） */
+const docs = {};
+months.forEach(m => {
+  docs[m] = {};
+  patients.forEach(p => {
+    const isCur = (m === CUR);
+    const v = isCur ? p.cur : [1,1,1];
+    docs[m][p.id] = {
+      plan:   {done:!!v[0], on:null},
+      report: {done:!!v[1], on:null},
+      jisseki:{done:!!v[2], on:null},
+    };
+    if(!isCur){ // 過去月は提出日を入れておく
+      const base = new Date(m+'-01T00:00:00');
+      ['plan','report','jisseki'].forEach((k,i)=>{ docs[m][p.id][k].on = fmtMD(addDays(base, 4+i*3)); });
+    }
+  });
+});
+
+/* ====== 状態 ====== */
+const S = { month:CUR, todoOnly:false, ns:'', hoken:'', q:'', lq:'', lHos:'', lKyo:'', lSt:'利用中', kTodo:true };
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const active = () => patients.filter(p => p.status === '利用中');
+const needsJisseki = p => p.hoken === '介護';
+
+/* 指示書の期限を判定 */
+function shijiInfo(p){
+  const d = addDays(TODAY, p.shiji);
+  if(p.shiji < 0)  return {cls:'crit', text:'期限切れ '+Math.abs(p.shiji)+'日', date:fmtYMD(d), level:2};
+  if(p.shiji <= 30) return {cls:'warn', text:'残り '+p.shiji+'日',            date:fmtYMD(d), level:1};
+  return {cls:'ok', text:'残り '+p.shiji+'日', date:fmtYMD(d), level:0};
+}
+
+/* ====== 今月のボード ====== */
+function boardRows(){
+  return active().filter(p => {
+    if(S.ns && p.ns !== S.ns) return false;
+    if(S.hoken && p.hoken !== S.hoken) return false;
+    if(S.q){ const q=S.q.trim(); if(q && !(p.name.includes(q)||p.kana.includes(q))) return false; }
+    if(S.todoOnly){
+      const d = docs[S.month][p.id];
+      const todo = !d.plan.done || !d.report.done || (needsJisseki(p) && !d.jisseki.done) || shijiInfo(p).level>0;
+      if(!todo) return false;
+    }
+    return true;
+  });
+}
+
+function renderSummary(){
+  const a = active(), d = docs[S.month];
+  const planN   = a.filter(p=>!d[p.id].plan.done).length;
+  const reportN = a.filter(p=>!d[p.id].report.done).length;
+  const jissekiN= a.filter(p=>needsJisseki(p) && !d[p.id].jisseki.done).length;
+  const shijiN  = a.filter(p=>shijiInfo(p).level>0).length;
+  const cells = [
+    {k:'利用中の方',      v:a.length,   u:'名', cls:'quiet'},
+    {k:'計画書 未提出',   v:planN,      u:'名', cls:planN?'alert':'quiet'},
+    {k:'報告書 未提出',   v:reportN,    u:'名', cls:reportN?'alert':'quiet'},
+    {k:'実績 未提出',     v:jissekiN,   u:'名', cls:jissekiN?'alert':'quiet'},
+    {k:'指示書 要対応',   v:shijiN,     u:'件', cls:shijiN?'danger':'quiet'},
+  ];
+  $('#summary').innerHTML = cells.map(c =>
+    `<div class="stat ${c.cls}"><span class="k">${c.k}</span><span class="v num">${c.v}<span class="u">${c.u}</span></span></div>`
+  ).join('');
+}
+
+function markBtn(pid, key, rec){
+  const label = rec.done ? '済' : '未';
+  const dt = rec.done && rec.on ? `<span class="dt">${rec.on}</span>` : '';
+  return `<button class="mark ${rec.done?'done':'todo'}" data-pid="${pid}" data-key="${key}"
+    aria-pressed="${rec.done}">${label}${dt}</button>`;
+}
+
+function renderBoard(){
+  renderSummary();
+  const rows = boardRows(), d = docs[S.month];
+  $('#board-count').textContent = `${rows.length} 名を表示中（利用中 ${active().length} 名）`;
+  if(!rows.length){
+    $('#board-body').innerHTML = `<tr><td colspan="7" class="empty">該当する方はいません。<br>「未提出だけ表示」を解除すると全員が出ます。</td></tr>`;
+    return;
+  }
+  $('#board-body').innerHTML = rows.map(p => {
+    const r = d[p.id], s = shijiInfo(p);
+    const todo = !r.plan.done || !r.report.done || (needsJisseki(p) && !r.jisseki.done);
+    return `<tr class="${todo?'has-todo':''}">
+      <td><span class="pname">${esc(p.name)}</span><span class="pkana">${esc(p.kana)}</span></td>
+      <td><span class="tag ${p.hoken==='介護'?'kaigo':'iryo'}">${p.hoken}</span></td>
+      <td class="nowrap">${esc(p.ns)}</td>
+      <td class="center">${markBtn(p.id,'plan',r.plan)}</td>
+      <td class="center">${markBtn(p.id,'report',r.report)}</td>
+      <td class="center">${needsJisseki(p) ? markBtn(p.id,'jisseki',r.jisseki) : '<span class="na">―</span>'}</td>
+      <td class="nowrap"><span class="tag ${s.cls}">${s.text}</span>
+        <span class="muted num" style="font-size:11px; margin-left:6px">${s.date}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ====== 利用者一覧 ====== */
+function renderList(){
+  const q = S.lq.trim();
+  const rows = patients.filter(p => {
+    if(S.lSt && p.status !== S.lSt) return false;
+    if(S.lHos && p.hospital !== S.lHos) return false;
+    if(S.lKyo && p.kyotaku !== S.lKyo) return false;
+    if(q && !(p.name.includes(q)||p.kana.includes(q)||p.hospital.includes(q)||p.cm.includes(q)||p.doctor.includes(q))) return false;
+    return true;
+  });
+  $('#list-count').textContent = `${rows.length} 名を表示中（全 ${patients.length} 名）`;
+  if(!rows.length){ $('#list-body').innerHTML = `<tr><td colspan="8" class="empty">該当する方はいません。</td></tr>`; return; }
+  const stTag = s => s==='利用中' ? '<span class="tag ok">利用中</span>'
+              : s==='中止' ? '<span class="tag warn">中止</span>'
+              : '<span class="tag iryo">終了</span>';
+  $('#list-body').innerHTML = rows.map(p => `<tr>
+    <td><span class="pname">${esc(p.name)}</span><span class="pkana">${esc(p.kana)}</span></td>
+    <td><span class="tag ${p.hoken==='介護'?'kaigo':'iryo'}">${p.hoken}</span></td>
+    <td>${stTag(p.status)}</td>
+    <td class="nowrap">${esc(p.ns)}</td>
+    <td class="nowrap">${esc(p.hospital)}</td>
+    <td class="nowrap">${esc(p.doctor)}</td>
+    <td class="nowrap ${p.kyotaku==='―'?'muted':''}">${esc(p.kyotaku)}</td>
+    <td class="nowrap ${p.cm==='―'?'muted':''}">${esc(p.cm)}</td>
+  </tr>`).join('');
+}
+
+/* ====== 契約書類 ====== */
+const K_LABELS = ['契約書','重要事項説明書','個人情報同意書'];
+function renderKeiyaku(){
+  let rows = patients.filter(p => p.status !== '終了');
+  if(S.kTodo) rows = rows.filter(p => p.keiyaku.some(v => !v));
+  const missing = patients.filter(p => p.status!=='終了' && p.keiyaku.some(v=>!v)).length;
+  $('#k-count').textContent = `揃っていない方 ${missing} 名 / 対象 ${patients.filter(p=>p.status!=='終了').length} 名`;
+  if(!rows.length){ $('#k-body').innerHTML = `<tr><td colspan="5" class="empty">未提出の書類はありません。</td></tr>`; return; }
+  $('#k-body').innerHTML = rows.map(p => `<tr class="${p.keiyaku.some(v=>!v)?'has-todo':''}">
+    <td><span class="pname">${esc(p.name)}</span><span class="pkana">${esc(p.kana)}</span></td>
+    <td class="nowrap num muted" style="font-size:12px">${fmtYMD(addDays(TODAY,p.startOff))}</td>
+    ${p.keiyaku.map((v,i)=>`<td class="center">
+      <button class="mark ${v?'done':'todo'}" data-kpid="${p.id}" data-ki="${i}"
+        aria-pressed="${!!v}" aria-label="${esc(p.name)} の ${K_LABELS[i]}">${v?'済':'未'}</button></td>`).join('')}
+  </tr>`).join('');
+}
+
+/* ====== 操作 ====== */
+document.addEventListener('click', e => {
+  const m = e.target.closest('.mark');
+  if(!m) return;
+  if(m.dataset.pid){
+    const rec = docs[S.month][+m.dataset.pid][m.dataset.key];
+    rec.done = !rec.done;
+    rec.on = rec.done ? fmtMD(TODAY) : null;
+    renderBoard();
+  } else if(m.dataset.kpid){
+    const p = patients.find(x => x.id === +m.dataset.kpid);
+    const i = +m.dataset.ki;
+    p.keiyaku[i] = p.keiyaku[i] ? 0 : 1;
+    renderKeiyaku();
+  }
+});
+
+/* タブ切替 */
+const panels = {'tab-board':'panel-board','tab-list':'panel-list','tab-keiyaku':'panel-keiyaku'};
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(x => x.setAttribute('aria-selected', String(x===t)));
+  Object.values(panels).forEach(id => { document.getElementById(id).hidden = true; });
+  document.getElementById(panels[t.id]).hidden = false;
+}));
+
+/* 月セレクト */
+$('#month').innerHTML = months.slice().reverse().map(m => {
+  const [y,mm] = m.split('-');
+  return `<option value="${m}">${y}年${Number(mm)}月${m===CUR?'（今月）':''}</option>`;
+}).join('');
+$('#month').value = CUR;
+$('#month').addEventListener('change', e => { S.month = e.target.value; renderBoard(); });
+
+/* 絞り込み */
+const uniq = key => [...new Set(patients.map(p=>p[key]))].filter(v=>v!=='―').sort();
+$('#f-ns').innerHTML += uniq('ns').map(v=>`<option>${esc(v)}</option>`).join('');
+$('#l-hospital').innerHTML += uniq('hospital').map(v=>`<option>${esc(v)}</option>`).join('');
+$('#l-kyotaku').innerHTML += uniq('kyotaku').map(v=>`<option>${esc(v)}</option>`).join('');
+
+$('#f-todo').addEventListener('click', e => {
+  S.todoOnly = !S.todoOnly;
+  e.currentTarget.setAttribute('aria-pressed', String(S.todoOnly));
+  renderBoard();
+});
+$('#f-ns').addEventListener('change', e => { S.ns = e.target.value; renderBoard(); });
+$('#f-hoken').addEventListener('change', e => { S.hoken = e.target.value; renderBoard(); });
+$('#f-q').addEventListener('input', e => { S.q = e.target.value; renderBoard(); });
+
+$('#l-q').addEventListener('input', e => { S.lq = e.target.value; renderList(); });
+$('#l-hospital').addEventListener('change', e => { S.lHos = e.target.value; renderList(); });
+$('#l-kyotaku').addEventListener('change', e => { S.lKyo = e.target.value; renderList(); });
+$('#l-status').addEventListener('change', e => { S.lSt = e.target.value; renderList(); });
+
+$('#k-todo').addEventListener('click', e => {
+  S.kTodo = !S.kTodo;
+  e.currentTarget.setAttribute('aria-pressed', String(S.kTodo));
+  renderKeiyaku();
+});
+
+renderBoard(); renderList(); renderKeiyaku();
+</script>
